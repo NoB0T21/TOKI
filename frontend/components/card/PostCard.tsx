@@ -1,130 +1,99 @@
 'use client'
 import { Like, LikeFill } from "../Icons"
-import { api } from "@/utils/api"
 import { useState } from "react"
+import {motion} from 'motion/react'
+import { Posts2 } from "@/Types/types"
+import { followusers, likePosts } from "@/utils/clientAction"
 import Image from "next/image"
 import Readmore from "../Readmore"
 import Cookies from "js-cookie"
 import FileDropdown from "./FileDropdown"
 
-interface Post{
-    id:string,
-    pictureURL: string,
-    creator:string
-    message:string,
-    title:string,
-    owner:string,
-    tags: [],
-    originalname:string,
-    like:{
-        like:string[]
-        likeCount:number
-    }
-}
-
-const PostCard = ({file, profile, name, userID,followings}:{file:Post, profile:string, name:string, userID:string, followings:string[]}) => {
-  const token = Cookies.get('token');
+const PostCard = ({file, profile, name, userID,followings}:{file:Posts2, profile:string, name:string, userID:string, followings:string[]}) => {
   const user = Cookies.get('user') || '';
-    const [like, setLike ] = useState<string[]>(file?.like?.like)
-    const [show,setShow]=useState(false)
-    const [likecount, setLikeCount ] = useState<number>(file?.like?.likeCount)
-    const [following, setFollowing ] = useState<string[]>(followings)
-    
-    const likePost = async () => {    
-      if(!token){
-        return
+  const [like, setLike ] = useState<string[]>(file?.like?.like)
+  const [show,setShow]=useState(false)
+  const [likecount, setLikeCount ] = useState<number>(file?.like?.likeCount)
+  const [following, setFollowing ] = useState<string[]>(followings)
+  
+  const likePost = async () => {
+    const data = await likePosts({id:file.id})
+    if(data.status === 200) {
+      const currentLikes = Array.isArray(like) ? like : [];
+      const index = currentLikes.indexOf(user);
+      let updatedLikes;
+      if (index === -1) {
+        updatedLikes = [...currentLikes, user]; // Add like
+        setLikeCount(prev => prev + 1);
+      } else {
+        updatedLikes = currentLikes.filter(id => id !== user); // Remove like
+        setLikeCount(prev => (prev > 0 ? prev - 1 : 0));
       }
-      console.log(file)
-      const data = await api.get(`/post/like/${file.id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          withCredentials: true,
-        }
-      );
-      if(data.status === 200) {
-        const currentLikes = Array.isArray(like) ? like : [];
-        const index = currentLikes.indexOf(userID);
-        let updatedLikes;
-
-        if (index === -1) {
-          updatedLikes = [...currentLikes, userID]; // Add like
-          setLikeCount(prev => prev + 1);
-        } else {
-          updatedLikes = currentLikes.filter(id => id !== userID); // Remove like
-          setLikeCount(prev => (prev > 0 ? prev - 1 : 0));
-        }
-
-        setLike(updatedLikes);
-      }
+      setLike(updatedLikes);
+    }
   }
 
-  const followuser = async () => {    
-             if(!token){
-               return
-             }
-             
-             const data = await api.get(`/post/follow/${file.owner}`,
-               {
-                 headers: {
-                   Authorization: `Bearer ${token}`,
-                 },
-                 withCredentials: true,
-               }
-             );
-             if(data.status === 200) {
-               const currentLikes = Array.isArray(following) ? following : [];
-               const index = currentLikes.indexOf(user);
-               let updatedFollow;
-       
-               if (index === -1) {
-                 updatedFollow = [...currentLikes, user]; // Add like
-                 //setLikeCount(prev => prev + 1);
-               } else {
-                 updatedFollow = currentLikes.filter(id => id !== user); // Remove like
-                 //setLikeCount(prev => (prev > 0 ? prev - 1 : 0));
-               }
-       
-               setFollowing(updatedFollow);
-             }
-         }
+  const followuser = async () => {
+     const data = await followusers({CreatorId:file.owner})
+    if(data.status === 200) {
+      const currentLikes = Array.isArray(following) ? following : [];
+      const index = currentLikes.indexOf(user);
+      let updatedFollow;
+
+      if (index === -1) {
+        updatedFollow = [...currentLikes, user]; // Add like
+        //setLikeCount(prev => prev + 1);
+      } else {
+        updatedFollow = currentLikes.filter(id => id !== user); // Remove like
+        //setLikeCount(prev => (prev > 0 ? prev - 1 : 0));
+      }
+
+      setFollowing(updatedFollow);
+    }
+  }
 
   return (
     <>
-      <div key={file.id} className="relative bg-black my-6 rounded-md w-full lg:w-2/3 h-[78vh] overflow-y-auto snap-center scrollbar">
-        <div className="w-full h-full">
-          <Image
-              src={file.pictureURL}
-              alt="Post"
-              width={3840}
-              height={2160}
-              className="bg-black p-1 rounded-md w-full h-full object-contain"
-          />
-        </div>
-        <div className="top-0 absolute flex justify-between p-5 w-full h-20">
-          <div className="flex justify-start items-center gap-2 w-2/3">
+      <div key={file.id} className="relative bg-black my-1 sm:my-6 py-3 rounded-md w-full md:w-160 h-[60vh] sm:h-[70vh] overflow-y-auto snap-always snap-center scrollbar">
+          <div className="flex justify-between items-center w-full">
+            <div className="flex items-center my-3 px-2">
               <Image
                 src={profile}
                 alt="Post"
                 width={500}
                 height={500}
-                className="rounded-full w-10 h-10 object-cover"
+                className="rounded-full size-[30px] sm:size-11 object-cover"
               />
-              <p className="truncate">{name}</p>
+                <div className="flex items-center gap-3 px-2">
+                  <div className="truncate">{name}</div>
+                </div>
+            </div>
+            <div className="flex justify-between items-center p-5 w-full h-full">
+                {userID===user?
+                <p onClick={()=>setShow(true)}>...</p>
+                :
+                <motion.div
+                  whileTap={{ scale: 0.7 }}
+                  onClick={followuser}
+                  className="right-5 absolute flex items-center px-2 border-1 rounded-md"
+                >{following?.includes(user)?'Following':'Follow'}</motion.div>}
+            </div>
           </div>
-          <div>
-            {userID===user?
-            <p onClick={()=>setShow(true)}>...</p>
-            :
-            <div onClick={followuser} className="right-5 absolute flex items-center px-2 border-1 rounded-md">{following?.includes(user)?'Following':'Follow'}</div>}
-          </div>
-        </div>
-        <div className="bottom-0 absolute p-5 w-full h-25">
-          <div onClick={() =>likePost()} className="flex gap-3">
-            <div className="flex gap-1"><div className={`size-7 `}>{like?.includes(userID)?<LikeFill/>:<Like/>}</div>{likecount}</div>
-            <div className="flex gap-1"><div className={`size-7`}><LikeFill/></div>{likecount}</div>
-          </div>
+          <Image
+              src={file.pictureURL}
+              alt="Post"
+              width={3840}
+              height={2160}
+              className="rounded-md w-full h-2/3 object-cover"
+          />
+        <div className="px-1 py-2 w-full h-25">
+          <motion.div
+            whileTap={{ scale: 0.7 }}
+            onClick={() =>likePost()} 
+            className="flex gap-3 w-7"
+          >
+            <div className="flex gap-1"><div className={`size-6 sm:size-7 `}>{like?.includes(user)?<LikeFill/>:<Like/>}</div><p className='font-semibold'>{likecount}</p></div>
+          </motion.div>
           <div className='flex justify-start mx-1mt-1 p-1'>
                 {file.tags.map((tag, index) => (
                     <span key={index} className="flex items-center text-blue-500 hover:text-blue-600 text-sm hover:underline hover:underline-offset-1 cursor-pointer">

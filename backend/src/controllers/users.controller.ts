@@ -1,10 +1,11 @@
-import { Request } from "express"
+import { Request,Response } from "express"
 import {OAuth2Client} from 'google-auth-library'
 import { findUser, registerUser, registerUserfollowers, registerUserfollowings } from "../services/user.service"
 import supabase from "../Db/supabase"
 import uuid4 from "uuid4"
 import userModel from '../models/user.model'
 import jwt from 'jsonwebtoken'
+import following from "../models/user.following.model"
 
 const client = new OAuth2Client(process.env.GOOGLE_ID)
 
@@ -15,7 +16,7 @@ interface User {
     password:string
 }
 
-export const register = async (request: Request, response: any) => {
+export const register = async (request: Request, response: Response) => {
     const file = request.file as Express.Multer.File;
     const {name, email, password, picture} = request.body
     if(!name||!email||!password){
@@ -96,7 +97,7 @@ export const register = async (request: Request, response: any) => {
     }
 }
 
-export const login = async (request: Request, response:any) => {
+export const login = async (request: Request, response:Response) => {
     const {email, password} = request.body
     if(!email||!password){
         return response.status(400).json({
@@ -135,7 +136,7 @@ export const login = async (request: Request, response:any) => {
     }
 }
 
-export const valid = async (req: Request, res:any) => {
+export const valid = async (req: Request, res:Response) => {
     const authHeader = req.headers.authorization;
       if (!authHeader || !authHeader.startsWith('Bearer ')) {
         res.status(401).json({ message: 'Access Token required' });
@@ -176,5 +177,34 @@ export const valid = async (req: Request, res:any) => {
                 success: false,
             })
         }
+    }
+}
+
+export const getfollowings = async (req: Request, res:Response) => {
+    const userId = req.user._id
+    if(!userId){
+        res.status(401).json({ message: 'Access Token required' });
+        return;
+    }
+
+    try {
+        const creatorIds = await following.findOne({userID: userId})
+        if(!creatorIds){
+                return res.status(200).json({
+                    message: "not verified",
+                    success: false,
+                })
+            }
+            
+            return res.status(200).json({
+                message: "verified",
+                creatorIds:creatorIds.count,
+                success: true,
+            })
+    } catch (error) {
+        return res.status(500).json({
+            message: "server error",
+            success: false,
+        })
     }
 }

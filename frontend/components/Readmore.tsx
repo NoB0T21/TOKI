@@ -25,7 +25,7 @@ const Readmore: React.FC<Props> = ({ text, maxLength = 100 }) => {
       {text.length > maxLength && (
         <button
           onClick={toggleReadMore}
-          className="mt-2 text-blue-500 hover:underline"
+          className="text-blue-500 hover:underline"
         >
           {isExpanded ? 'Read less' : 'Read more'}
         </button>

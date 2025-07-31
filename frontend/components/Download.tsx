@@ -5,7 +5,6 @@ import { useState } from "react"
 const DownloadBtn = ({url, name}:{url: string,name: string}) => {
     const [progress, setprogress] = useState(0)
     const [downloading, setDownloading] = useState(false)
-    const [error,setError] = useState('')
 
     const HandleDownload = () => {
         const xhr = new XMLHttpRequest()
@@ -19,7 +18,6 @@ const DownloadBtn = ({url, name}:{url: string,name: string}) => {
         xhr.onloadstart =() =>{ 
             setDownloading(true)
             setprogress(0)
-            setError('')
         }
         xhr.onload =() =>{
             if(xhr.status>=200 && xhr.status<300){
@@ -29,8 +27,6 @@ const DownloadBtn = ({url, name}:{url: string,name: string}) => {
                 a.download=name
                 a.click()
                 window.URL.revokeObjectURL(url)
-            }else{
-                setError('error occoyes')
             }
         }
         xhr.onloadend =() => {

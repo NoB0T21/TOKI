@@ -12,6 +12,8 @@ import Toasts from "./toasts/Toasts";
 import GoogleForm from "./GoogleForm";
 import Cookies from "js-cookie";
 import Image from "next/image";
+import { Auth } from "@/Types/types";
+import { AuthFormapi } from "@/utils/clientAction";
 
 
 type FormType = 'sign-in' | 'sign-up'
@@ -33,21 +35,9 @@ const signInSchema = z.object({
 
 const AuthForm = ({type}: {type: FormType}) => {
     const googleID = process.env.NEXT_PUBLIC_GOOGLE_ID || 'none'
-    const [formData, setFormData] = useState<{
-        name?: string;
-        email?: string;
-        picture?: string;
-        password?: string;
-        confirm?: string;
-        file?: File
-    }>({})
-    const [error, setError] = useState<{
-        name?: string;
-        email?: string;
-        password?: string;
-        confirm?: string
-    }>({})
     const router=useRouter()
+    const [formData, setFormData] = useState<Auth>({})
+    const [error, setError] = useState<Auth>({})
     const [show,setShow] = useState(false)
     const [showToast,setShowToast] = useState(false)
     const [responseMsg,setResponseMsg] = useState('')
@@ -119,11 +109,10 @@ const AuthForm = ({type}: {type: FormType}) => {
             form2.append('email', formData.email || '');
             form2.append('password', formData.password || '');
 
-        const response = await api.post(type === 'sign-in'? '/user/signin':'/user/signup',type === 'sign-in'? form2:form,{
-            headers: { "Content-Type": "multipart/form-data" },
-            withCredentials: true
+        const response = await AuthFormapi({
+            path:type === 'sign-in'? '/user/signin':'/user/signup',
+            form:type === 'sign-in'? form2:form
         })
-
         if(response.status !== 201){
             setResponseMsg(response.data.message)
             if(response.status === 202)setTostType('infoMsg');
@@ -131,7 +120,7 @@ const AuthForm = ({type}: {type: FormType}) => {
             setShowToast(true)
             setTimeout(() => {
                 setShowToast(false)
-              }, 6000);
+              }, 3000);
             return
         }
 

@@ -3,18 +3,10 @@
 import { useEffect, useRef, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import Image from 'next/image'
+import { Post } from '@/Types/types'
 
-interface Post{
-    id:string,
-    creator: string,
-    title: string,
-    message: string,
-    tags:string[],
-    pictureURL:string,
-    createdAt:string,
-}
 
-const Posts = ({posts,owner}:{posts : any,owner:string}) => {
+const Posts = ({posts,owner}:{posts : Post[],owner:string}) => {
     const path = usePathname()
     const postId = path.split('/')[4]
     const containerRef = useRef<HTMLDivElement>(null)

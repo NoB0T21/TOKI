@@ -15,6 +15,7 @@ const postcountSchema:Schema<Following> = new mongoose.Schema({
     postcount: {
         type: Number,
         default: 0,
+        min:0
     },
 })
 

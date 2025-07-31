@@ -1,47 +1,18 @@
 'use client'
+
 import { getpostpageintion } from '@/queries/Queries';
 import {useLazyQuery} from '@apollo/client'
-import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
-import { ProfileHeader } from './navigation/Header';
 import ProfileData from './ProfileData';
 import ProfileNav from './navigation/ProfileNav';
 import PostCard from './card/PostCard';
-import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+import { getUserPosts2 } from '@/utils/clientApollo';
+import { Posts, User2 } from '@/Types/types';
 
-interface Posts {
-  id:string,
-    pictureURL: string,
-    creator:string
-    message:string,
-    title:string,
-    owner:string,
-    tags: [],
-    originalname:string,
-    like:{
-        like:string[]
-        likeCount:number
-    }
-}
-
-interface User {
-  follower: {
-    count: string[]
-    followerCount:number
-  },
-  following:{ 
-    count: string[]
-    folloingCount:number
-  },
-  id: string,
-  name: string,
-  picture: string,
-  postcount:{
-    postcount: number|undefined
-  }
-}
-
-const Userprofile = ({userId , user}:{userId:string,user:User}) => {
+const Userprofile = ({userId , user}:{userId:string,user:User2}) => {
+  const router = useRouter();
   const [posts,setPosts] = useState<Posts[]>([]);
   const [skip, setSkip] = useState(0);
   const [postId, setPostId] = useState('');
@@ -51,30 +22,26 @@ const Userprofile = ({userId , user}:{userId:string,user:User}) => {
   const [getuserPost] = useLazyQuery(getpostpageintion)
   const containerRef = useRef<HTMLDivElement>(null)
   const currentIndex = posts.findIndex((post) => post.id === postId)
-  const router = useRouter();
+
   const fetchMore = async () => {
     if (!hasMore) return;
-    const { data } = await getuserPost({
-      variables: {
-        owner: userId,
-        offset: skip*10,
-        limit: 10,
-      },
-    })
-    
-    const newPosts = data?.posts || [];
+
+    const userposts = await getUserPosts2({userId,skip,getuserPost})
+  
+    const newPosts = userposts || [];
     if (newPosts.length < 10 ) {
-      setHasMore(false); // No more posts to fetch
+      setHasMore(false);
     }
     if (newPosts.length) {
       setPosts((prev) => {
-        const merged = [...prev, ...data.posts]; // Merge old and new posts
+        const merged = [...prev, ...userposts];
         const unique = Array.from(
-          new Map(merged.map((p) => [p.id, p])).values() // Deduplicate by post.id
+          new Map(merged.map((p) => [p.id, p])).values()
         );
-        return unique; // Set state with only unique posts
+        return unique;
       });
     }
+    
     router.refresh();
   }
   
@@ -102,27 +69,28 @@ const Userprofile = ({userId , user}:{userId:string,user:User}) => {
     <>
       {!show && 
       <>
-        <ProfileHeader name={user.name}/>
         <ProfileData 
+          id={user.id}
           picture={user.picture} 
           posts={count} 
           follower={user.follower.followerCount} 
           following={user.following.folloingCount}
           followinglist={user.following.count}
+          followerlist={user.follower.count}
         />
         <div className='top-12 z-3 sticky'>
           <ProfileNav/>
         </div>
-        <div onScroll={handleScroll} className="gap-4 grid sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 mt-5 w-full h-2/3 overflow-y-scroll">
+        <div onScroll={handleScroll} className="gap-1 grid grid-cols-3 md:grid-cols-4 mt-5 w-full h-2/3 overflow-y-scroll">
           {posts.map((f:any)=>(
-            <div key={f.id} onClick={()=>{setShow(true);setPostId(f.id)}} className="bg-[rgba(84,84,84,0.6)] md:bg-[rgba(84,84,84,0.4)] backdrop-blur-xl rounded-md w-full h-70 overflow-hidden">
+            <div key={f.id} onClick={()=>{setShow(true);setPostId(f.id)}} className="rounded-md w-full h-30 sm:h-70 overflow-hidden">
             <div className="w-full h-full">
               <Image
                 src={f.pictureURL}
                 alt="Post"
                 width={1920}
                 height={1080}
-                className="bg-black rounded-md w-full h-full object-contain md:object-cover"
+                className="bg-black rounded-md w-full h-full object-cover"
               />
               </div>
             </div>
@@ -130,14 +98,16 @@ const Userprofile = ({userId , user}:{userId:string,user:User}) => {
           </div>
       </>}
       {show && 
-      <>
-        <h1 className='flex gap-3 font-bold text-2xl'><div onClick={()=>setShow(false)}>/</div> Posts</h1>
+      <div className='py-5 w-full h-full'>
+        <h1 className='top-1 z-9 sticky flex gap-3 font-bold text-2xl'>
+          <div onClick={()=>setShow(false)}>back</div> Posts
+        </h1>
         <div ref={containerRef} onScroll={handleScroll} className="gap-4 grid mt-5 w-full h-[80vh] overflow-y-scroll scroll-smooth snap-mandatory snap-y">
           {posts.map((f:any)=>(
-            <PostCard key={f.id} followings={user.following.count} file={f} profile={user.picture} name={user.name} userID={userId}/>
+            <PostCard key={f.id} followings={user.follower.count} file={f} profile={user.picture} name={user.name} userID={userId}/>
           ))} 
         </div>
-      </>}
+      </div>}
     </>
   )
 }

@@ -1,7 +1,13 @@
 import { actionDropdown } from "@/utils/utils"
 import Items from "./Items"
 
-const FileDropdown = ({title,url,filename}:{title:string,url:string,filename:string}) => {
+interface Props{
+  title:string,
+  url:string,
+  filename:string
+}
+
+const FileDropdown = ({title,url,filename}:Props) => {
   return (
     <div className='flex justify-center items-center backdrop-blur-xs w-full h-full'>
       <div className="bg-zinc-800 p-4 rounded-xl w-85 md:w-120">

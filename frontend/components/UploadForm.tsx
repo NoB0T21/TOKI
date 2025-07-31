@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Toasts from "./toasts/Toasts";
 import Cookies from 'js-cookie'
+import { postFormapi } from "@/utils/clientAction";
 
 const formSchema = z.object({
     creator: z.string().min(1, "creator required"),
@@ -18,7 +19,6 @@ const formSchema = z.object({
 
 const UploadForm = () => {
     const router = useRouter()
-    const token = Cookies.get("token") || "";
     const user = JSON.parse(localStorage.getItem('user') || '')
     const [formData, setFormData] = useState<{
         creator: string;
@@ -122,15 +122,10 @@ const UploadForm = () => {
                 form.append('file', files);
             }
 
-        const response = await api.post('/post/create',form,{
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-            withCredentials: true
-        })
+        const response = await postFormapi({form})
         if(response.status !== 200){
             setResponseMsg(response.data.message)
-            if(response.status === 202)setTostType('infoMsg');
+            if(response.status === 202)setTostType('successMsg');
                 setLoading(false)
                 setShowToast(true)
                 setTimeout(() => {
@@ -149,7 +144,7 @@ const UploadForm = () => {
         })
         setResponseMsg(response.data.message)
         if(response.status === 200){
-            setTostType('infoMsg');
+            setTostType('successMsg');
         }
 
         setLoading(false)

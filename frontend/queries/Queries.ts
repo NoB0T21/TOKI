@@ -94,6 +94,9 @@ export  const getexplorepostpageintion = gql`
             following{
                 count
             }
+            follower{
+                count
+            }
             user{
                 id
                 name
@@ -109,6 +112,73 @@ export  const getfollowinguser = gql`
             id
             name
             picture
+            follower{
+                userID
+                count
+            }
+            following{
+                userID
+                count
+            }
         }
         }
+`
+
+export  const gethomepostpageintion = gql`
+      query getfolowingPost($homeOwner:[ID], $offset: Int, $limit: Int){  
+        homeposts(homeOwner: $homeOwner, offset: $offset, limit: $limit){
+           id
+            pictureURL
+            creator
+            title
+            owner
+            tags
+            message
+            originalname
+            like{
+                like
+                likeCount
+            }
+            following{
+                count
+            }
+                follower{
+                count
+            }
+            user{
+                id
+                name
+                picture
+            }
+        }
+    }
+`
+
+export  const getuserstory = gql`
+      query getStory($following:[ID]) {
+  userstories(following: $following) {
+    id
+    name
+    picture
+  }
+}
+`
+
+export  const getstory = gql`
+      query getStory($following:[ID]) {
+  userstories(following: $following) {
+    id
+    name
+    picture
+    follower {
+      userID
+      count
+    }
+    stories {
+      userID
+      imageUrl
+      createdAt
+    }
+  }
+}
 `
