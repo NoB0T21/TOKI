@@ -1,6 +1,6 @@
 'use client'
 
-import { convertFileToUrl } from "@/utils/utils";
+import { convertFileToUrl, fetchAICompletion, fetchAITegs } from "@/utils/utils";
 import { useState } from "react";
 import { PulseLoader } from "react-spinners";
 import { z } from "zod";
@@ -10,6 +10,8 @@ import Image from "next/image";
 import Toasts from "./toasts/Toasts";
 import Cookies from 'js-cookie'
 import { postFormapi } from "@/utils/clientAction";
+import { Gemini } from "./Icons";
+import { tryLoadManifestWithRetries } from "next/dist/server/load-components";
 
 const formSchema = z.object({
     creator: z.string().min(1, "creator required"),
@@ -24,7 +26,7 @@ const UploadForm = () => {
         creator: string;
         title?: string;
         message?: string;
-        tags?: string[];
+        tags: string[];
         owner:string;
     }>({
         creator:user?.name, 
@@ -42,10 +44,19 @@ const UploadForm = () => {
     const [loading,setLoading] = useState(false)
     const [inputValue, setInputValue] = useState('');
     const [showToast,setShowToast] = useState(false)
+    const [show,setShow] = useState(false)
+    const [showtag,setShowtag] = useState(false)
     const [responseMsg,setResponseMsg] = useState('')
     const [tostType,setTostType] = useState('warningMsg')
+    const [isGenerating, setIsGenerating] = useState(false);
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {setInputValue(e.target.value);};
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        let vlue =e.target.value
+        setInputValue(e.target.value);
+        if (!vlue.includes("/")) setShowtag(false)
+        if (vlue.includes("/")) setShowtag(true)
+    };
 
     const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
       if (e.key === 'Enter' || e.key === ',' && inputValue.trim() !== '') {
@@ -85,8 +96,19 @@ const UploadForm = () => {
         })
     }
 
-     const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
+
+        if(formData.tags.length > 15){
+            setTostType('infoMsg')
+            setShowToast(true)
+            setResponseMsg('not more than 15 tags ')
+            setTimeout(() => {
+                setShowToast(false)
+            }, 3000);
+            return
+        }
+
         setShowToast(false)
         setLoading(true)
 
@@ -153,14 +175,89 @@ const UploadForm = () => {
             setShowToast(false)
         }, 3000);
         router.refresh()
+        router.push('/Profile')
         return
     }
+
+    const prompttext = async ({lastChar,value}:{lastChar:string,value:string}) => {
+        // If the last character typed is a space or Enter
+        if (lastChar === "\n") {
+        const [promptPart, contextPart] = value.split("/").map((s) => s.trim());
+        const prompt = promptPart || "";
+        const context = contextPart || "";
+
+        setIsGenerating(true);
+
+        // Set only the prompt part before AI continues
+        setFormData((prev) => ({ ...prev, message: prompt }));
+
+        await fetchAICompletion({ prompt, context }, (chunk) => {
+            const cleanedChunk = chunk.startsWith(prompt)
+            ? chunk.slice(prompt.length).trimStart()
+            : chunk;
+
+            setFormData((prev) => ({
+            ...prev,
+            message: prev.message + cleanedChunk,
+            }));
+        });
+
+        setIsGenerating(false);
+        setShow(false)
+        }
+    }
+
+    const prompttag = async ({lastChar,title,message}:{lastChar:string,title:string,message:string}) => {
+        // If the last character typed is a space or Enter
+        if (lastChar === "\n") {
+            const [promptPart, contextPart] = inputValue.split("/").map((s) => s.trim());
+        setInputValue(`${promptPart}, ${contextPart}`)
+        setIsGenerating(true);
+
+        const res = await fetchAITegs({ title, message }, (chunk) => {
+            const cleanedChunk = chunk;
+
+            setInputValue((prev) => 
+            prev + cleanedChunk,);
+        });
+        if(res==='{"error":"Missing prompt"}'){
+            setResponseMsg('Atleast write Message to generate tags')
+            setShowToast(true)
+            setTimeout(() => {
+                setShowToast(false)
+            }, 3000);
+            setIsGenerating(false);
+        setShowtag(false)
+        return
+        }
+
+
+        setIsGenerating(false);
+        setShowtag(false)
+        }
+    }
+
+    const handleChange = async (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        const value = e.target.value;
+        setFormData({ ...formData, message: value });
+
+        const lastChar = value.slice(-1);
+
+        if (!value.includes("/")) setShow(false)
+
+        if (value.includes("/")) {
+            setShow(true)
+            prompttext({lastChar,value})
+        }
+    };
+
+    
 
   return (
     <div className='flex sm:flex-row flex-col justify-center mt-5 w-full h-full'>
         <div className="flex flex-col items-center w-full h-full">
-            <form onSubmit={handleSubmit} className="flex flex-col items-center gap-4 p-1 rounded-md w-full md:w-2/3 lg:w-1/2">
-                <div className="relative w-2/3 lg:w-1/2">
+            <form onSubmit={handleSubmit} className="flex flex-col items-center gap-4 p-1 rounded-md w-full">
+                <div className="relative w-full md:w-2/3 max-w-120">
                     <input name='text' type="text" value={formData.title} onChange={(e) => {setFormData({...formData, title: e.target.value})}}required 
                         className="peer bg-zinc-800 p-2 border border-zinc-700 focus:border-indigo-500 rounded-md outline-none w-full h-10 text-white transition-all duration-200"
                     />
@@ -168,19 +265,27 @@ const UploadForm = () => {
                         <span>name</span>
                     </label>
                 </div>
-                <div className="relative w-2/3 lg:w-1/2">
-                    <textarea name='text' value={formData.message} onChange={(e) => {setFormData({...formData, message: e.target.value})}}required 
+                <div className="relative w-full md:w-2/3 max-w-120">
+                    {isGenerating && <div className="border-2 border-t-transparent border-blue-400 rounded-full w-5 h-5 animate-spin"></div>}
+                    <textarea disabled={isGenerating} name='text' value={formData.message} onChange={(e) => {handleChange(e)}}required 
                         className="peer bg-zinc-800 p-2 border border-zinc-700 focus:border-indigo-500 rounded-md outline-none w-full h-20 text-white transition-all duration-200"
                     />
                     <label className="left-2 absolute bg-[#212121] px-1 rounded-sm text-gray-400 peer-focus:text-[#2196f3] peer-valid:text-[#2196f3] text-xs text-clip scale-100 peer-focus:scale-75 peer-valid:scale-75 transition-all translate-y-3 peer-focus:-translate-y-2 peer-valid:-translate-y-2 duration-200 pointer-events-none transform">
                         <span>message</span>
                     </label>
+                    {show && 
+                        <div 
+                            onClick={()=>prompttext({lastChar:'\n',value:formData.message||''})} 
+                            className="z-2 absolute flex justify-start items-center gap-3 bg-[#1a1e23] px-2 border-[#3e4a57] border-1 rounded-md h-10 text-[#b0bec5]"
+                        ><div className="size-6"><Gemini/></div>Generate Text or Complete Sentence</div>
+                    }
                 </div>
-                <div className="relative w-2/3 lg:w-1/2">
+                <div className="relative w-full md:w-2/3 max-w-120">
                     <input 
-                        onKeyDown={handleInputKeyDown} 
+                        onKeyDown={handleInputKeyDown}
+                        disabled={isGenerating} 
                         onChange={(e) => {handleInputChange(e)}} 
-                        value={inputValue} required
+                        value={inputValue}
                         className="peer bg-zinc-800 p-2 border border-zinc-800 focus:border-indigo-500 rounded-md outline-none w-[97%] h-10 text-white transition-all duration-200" 
                         type="text"
                     />
@@ -202,14 +307,19 @@ const UploadForm = () => {
                             </div>
                         </>
                     }
+                    {showtag && <div 
+                        onClick={()=>prompttag({lastChar:'\n',title:formData.title||'',message:formData.message||''})} 
+                        className="top-12 z-2 absolute flex justify-start items-center gap-3 bg-[#1a1e23] px-2 border-[#3e4a57] border-1 rounded-md h-10 text-[#b0bec5]"
+                    ><div className="size-6"><Gemini/></div>Generate Tags</div>}
+
                     <label className="top-0 left-4 absolute bg-zinc-800 px-1 border border-zinc-800 peer-focus:border-indigo-500 rounded-sm text-gray-400 text-md peer-focus:text-[#fff] peer-valid:text-[#fff] scale-100 peer-focus:scale-75 peer-valid:scale-75 transition-all translate-y-2 peer-focus:-translate-y-2 peer-valid:-translate-y-2 duration-200 pointer-events-none transform">
                     <span>Tags</span>
                     </label>
                 </div>
                 <div className="flex gap-3 w-2/3 lg:w-1/2">
                     {error.files && <p className="mb-1 text-red-500 text-xs">{error.files}</p>}
-                    <div className="relative bg-purple-700 p-2 px-3 w-auto h-10">
-                        Upload Profile pic
+                    <div className="relative bg-zinc-700 p-2 rounded-md w-auto h-10">
+                        Upload youe post
                         <input 
                             className='left-0 absolute opacity-0 w-full' 
                             type='file' 
@@ -225,11 +335,11 @@ const UploadForm = () => {
                     </div>
                     
                 </div>
-                <div className="w-2/3 lg:w-1/2">
-                    <button type="submit" className="bg-indigo-600 hover:bg-indigo-700 p-2 rounded-md w-full font-semibold text-md">{loading? <PulseLoader color="#fff"/>:'Post'}</button>
+                <div className="relative w-full md:w-2/3 max-w-80">
+                    <button disabled={isGenerating || formData?.tags.length > 15} type="submit" className="bg-gradient-to-bl hover:bg-gradient-to-tr from-[#1ed1db] to-[#2daaae] p-1 rounded-md w-full font-semibold text-md transition-all duration-300 ease-in-out">{loading? <PulseLoader color="#fff"/>:'Post'}</button>
                 </div>
             </form>
-            <button onClick={clear} className="bg-red-500 before:bg-red-400 p-2 rounded-md w-2/3 lg:w-1/3 font-semibold text-md" type="submit" value="Upload"><h1 className='font-semibold text-[1.2rem]'>Clear</h1></button>
+            <button onClick={clear} className="relative bg-red-500 before:bg-red-400 mt-5 p-1 rounded-md w-full md:w-2/3 max-w-80 font-semibold text-md" type="submit" value="Upload"><h1 >Clear</h1></button>
         </div>
         {files && 
             <div className="flex justify-center">

@@ -12,7 +12,7 @@ const Sidebar = () => {
       <div className="flex flex-col gap-6 py-4 w-full">
         <div className="w-full h-10"><SidebarBtn pathname={'/'} name={'Dashboard'}/></div>
         <div className="w-full h-10"><SidebarBtn pathname={'/Explore'} name={'Explore'}/></div>
-        <div className="w-full h-10"><SidebarBtn pathname={'/create'} name={'Create'}/></div>
+        <div className="w-full h-10"><SidebarBtn pathname={'/Create'} name={'Create'}/></div>
         <div className="w-full h-10"><SidebarBtn pathname={'/Profile'} name={'Profile'}/></div>
       </div>
     </div>

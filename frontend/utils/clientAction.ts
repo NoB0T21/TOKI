@@ -67,3 +67,25 @@ export const poststoryapi = async ({form}:{form:any}) => {
     })
     return data
 }
+
+export const DeleteStory= async ({id}:{id:string}) => {
+    const token = Cookies.get('token')
+    const Ids = await api.get(`/story/delete/${id}`,{
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+        withCredentials: true
+    })
+    return Ids.data.creatorIds
+}
+
+export const addviewStory= async ({id}:{id:string}) => {
+    const token = Cookies.get('token')
+    const Ids = await api.get(`/story/view/${id}`,{
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+        withCredentials: true
+    })
+    return Ids.data
+}

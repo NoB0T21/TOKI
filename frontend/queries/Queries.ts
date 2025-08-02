@@ -175,9 +175,14 @@ export  const getstory = gql`
       count
     }
     stories {
+      id
       userID
       imageUrl
       createdAt
+      views{
+        count
+        storyviewsCount
+      }
     }
   }
 }

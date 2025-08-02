@@ -6,6 +6,8 @@ import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 import StoryDropdown from './StoryDropdown'
+import { addviewStory } from '@/utils/clientAction'
+import { Menu } from '../Icons'
 
 interface StoryViewerProps {
   stories: Story[]
@@ -24,7 +26,8 @@ if(stories.length === 0)route.push('/story')
   const currentUser = stories[userIndex]
   const currentStory = currentUser.stories[storyIndex]
 
-  const nextStory = () => {
+  const nextStory = async () => {
+  await addviewStory({id:stories[userIndex].stories[storyIndex].id})
     if (!currentUser) return
     if (storyIndex < currentUser.stories.length - 1) {
       setStoryIndex((prev) => prev + 1)
@@ -35,7 +38,7 @@ if(stories.length === 0)route.push('/story')
       setProgressKey((prev)=>prev+1)
     }
     if (storyIndex === currentUser.stories.length-1 && userIndex === stories.length-1) {
-      route.push(routes)
+      routes!=='/nortoute'?route.push(routes):route.refresh()
     }
   }
 
@@ -132,15 +135,15 @@ useEffect(() => {
           />
           <div className="font-bold">{currentUser.name}</div>
         </div>
-        {routes === '/story/ownview' && <div className='bottom-2 left-2 absolute'>
+        {routes === '/story/ownview' && <div className='top-2 right-2 absolute'>
           <button
             onClick={() => setIsPaused((prev) => !prev)}
-            className="text-white"
+            className="size-8 text-white"
           >
-            {isPaused ? 'Resume' : 'Pause'}
+            <Menu/>
           </button>
         </div>}
-        <AnimatePresence>{isPaused && <StoryDropdown/>}</AnimatePresence>
+        <AnimatePresence>{isPaused && <StoryDropdown id={stories[0].stories[storyIndex].id} count={stories[0].stories[storyIndex].views.storyviewsCount}/>}</AnimatePresence>
         
       </div>
     </div>

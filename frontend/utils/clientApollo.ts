@@ -42,3 +42,12 @@ export const getFollowingPosts= async ({ids,skip,getfollowingPost}:{ids:string[]
       })
     return data.homeposts
 }
+
+export const getstorys= async ({ids,getStory}:{ids:string[],getStory:any}) => {
+    const { data } = await getStory({
+        variables: {
+          following: ids,
+        },
+      })
+    return data
+}

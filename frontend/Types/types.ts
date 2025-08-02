@@ -105,6 +105,7 @@ export type StoryElement = {
   y?: number
   width?: number
   height?: number
+  z?:number
 }
 
 export interface Story {
@@ -115,8 +116,19 @@ export interface Story {
       count:string[]
     }
     stories:[{
+      id:string
       userID:string
       imageUrl:string
       createdAt:string
+      views:{
+        count:string[]
+        storyviewsCount:number
+      }
     }]
+}
+
+export interface User3 {
+  id: string,
+  name: string,
+  picture: string
 }

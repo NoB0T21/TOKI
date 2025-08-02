@@ -6,6 +6,7 @@ import follower from "../models/user.followers.model"
 import like from '../models/like.model'
 import PostCount from "../models/post.count.model"
 import storyModel from "../models/user.story.model"
+import storyview from "../models/story.views"
 
 const now = new Date();
 
@@ -41,6 +42,15 @@ const UserFollowersType = new GraphQLObjectType({
         userID:{type: GraphQLString},
         count:{type: new GraphQLList(GraphQLString)},
         followerCount:{type:GraphQLInt}
+    })
+})
+
+const StoryviewType = new GraphQLObjectType({
+    name:'storyViews',
+    fields:()=>({
+        storyID:{type: GraphQLString},
+        count:{type: new GraphQLList(GraphQLString)},
+        storyviewsCount:{type:GraphQLInt}
     })
 })
 
@@ -121,9 +131,16 @@ const PostType:any = new GraphQLObjectType({
 const StoryType = new GraphQLObjectType({
     name:'Userstory',
     fields:()=>({
+        id:{type: GraphQLID},
         userID:{type: GraphQLString},
         imageUrl:{type: GraphQLString},
         createdAt:{type: GraphQLString},
+        views:{
+            type:StoryviewType,
+            resolve(parent,args){
+                return storyview.findOne({storyID:parent._id})
+            }
+        }
     })
 })
 
@@ -148,7 +165,7 @@ const StoryType = new GraphQLObjectType({
                 expiresAt: { $gt: now }
                 }).sort({ createdAt: -1 })
             }
-            }
+        },
      })
  })
 

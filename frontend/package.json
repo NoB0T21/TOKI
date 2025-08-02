@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@apollo/client": "^3.13.8",
+    "@google/genai": "^1.12.0",
+    "@google/generative-ai": "^0.24.1",
     "@react-oauth/google": "^0.12.2",
     "axios": "^1.10.0",
     "graphql": "^16.11.0",

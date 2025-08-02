@@ -94,13 +94,13 @@ const PostCard = ({file, profile, name, userID,followings}:{file:Posts2, profile
           >
             <div className="flex gap-1"><div className={`size-6 sm:size-7 `}>{like?.includes(user)?<LikeFill/>:<Like/>}</div><p className='font-semibold'>{likecount}</p></div>
           </motion.div>
-          <div className='flex justify-start mx-1mt-1 p-1'>
-                {file.tags.map((tag, index) => (
-                    <span key={index} className="flex items-center text-blue-500 hover:text-blue-600 text-sm hover:underline hover:underline-offset-1 cursor-pointer">
-                        {tag}
-                    </span>
-                ))}
-            </div>
+          <div className='space-x-1 mx-1 mt-1 p-1 truncate'>
+            {file.tags.map((tag, index) => (
+              <span key={index} className="text-blue-500 hover:text-blue-600 text-sm hover:underline hover:underline-offset-1 cursor-pointer">
+                {tag}
+              </span>
+            ))}
+          </div>
           <div className="">
             <Readmore text={file.message} maxLength={30} />
           </div>
