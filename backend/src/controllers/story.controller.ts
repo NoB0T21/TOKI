@@ -8,21 +8,21 @@ import storyview from "../models/story.views";
 
 export const AddStory = async (req:Request,res:Response) => {
     const { file } = req
-    const {userID} = req.body
+    const {userID,SongId,start,end} = req.body
     if (!file || !userID) {
-        res.status(400).json({
+        res.status(300).json({
             message: "Require all fields",
             success: false,
         });
         return
     }
-
+    
     try {
         const files = file.originalname.split(" ").join("");
         const uniqueFilename = `${uuid4()}-${files}`;
         
         const { data, error } = await supabase.storage
-            .from("toki")
+        .from("toki")
             .upload(uniqueFilename, file.buffer, {
                 contentType: file.mimetype,
                 cacheControl: "3600",
@@ -35,32 +35,49 @@ export const AddStory = async (req:Request,res:Response) => {
             });
             return
         }
-        
         const publicUrlData = await supabase.storage
-            .from("toki")
-            .getPublicUrl(`${uniqueFilename}`);
-        
-            
+        .from("toki")
+        .getPublicUrl(`${uniqueFilename}`);
+        if(SongId){
             const newFile = await story.create({
                 userID,
                 path: uniqueFilename,
                 originalname: file?.originalname || "",
-                imageUrl: publicUrlData.data.publicUrl || ""
+                imageUrl: publicUrlData.data.publicUrl || "",
+                SongId,
+                start,
+                end
             });
-
             const newsto = await storyview.create({
                 storyID:newFile.id,
             });
-
-        res.status(200).json({
-            message: "File Uploaded successfully",
-            newFile,
-            success: true,
-        });
+            res.status(200).json({
+                message: "File Uploaded successfully",
+                newFile,
+                success: true,
+            });
+        }else{
+             const newFile = await story.create({
+                userID,
+                path: uniqueFilename,
+                originalname: file?.originalname || "",
+                imageUrl: publicUrlData.data.publicUrl || "",
+            });
+            const newsto = await storyview.create({
+                storyID:newFile.id,
+            });
+            res.status(200).json({
+                message: "File Uploaded successfully",
+                newFile,
+                success: true,
+            });
+        }
+            
+            
 
         return
     } catch (error) {
-        res.status(500).json({
+        res.status(400).json({
             message: "Internal server error",
             success: false,
         });

@@ -9,7 +9,6 @@ import { getuserstorys } from '@/utils/apolloclient'
 const page = async () => {
   const usersFollowing = await getuserfollowing()
   const getUsers = await getuserstorys({ids:usersFollowing})
-  console.log(getUsers)
 
   return (
     <div>

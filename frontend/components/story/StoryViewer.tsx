@@ -4,10 +4,10 @@ import { Story } from '@/Types/types'
 import { AnimatePresence, motion, useAnimation } from 'motion/react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import StoryDropdown from './StoryDropdown'
 import { addviewStory } from '@/utils/clientAction'
-import { Menu } from '../Icons'
+import { Menu, Music } from '../Icons'
 
 interface StoryViewerProps {
   stories: Story[]
@@ -16,18 +16,20 @@ interface StoryViewerProps {
 
 const StoryViewer: React.FC<StoryViewerProps> = ({ stories,routes}) => {
   const route = useRouter()
-if(stories.length === 0)route.push('/story')
+  
   const [isPaused, setIsPaused] = useState(false);
   const controls = useAnimation();
   const [userIndex, setUserIndex] = useState(0)
   const [progressKey, setProgressKey] = useState(0)
   const [storyIndex, setStoryIndex] = useState(0)
+  const audioRef = useRef<HTMLAudioElement>(null);
+
   
   const currentUser = stories[userIndex]
   const currentStory = currentUser.stories[storyIndex]
-
+  
   const nextStory = async () => {
-  await addviewStory({id:stories[userIndex].stories[storyIndex].id})
+    await addviewStory({id:stories[userIndex].stories[storyIndex].id})
     if (!currentUser) return
     if (storyIndex < currentUser.stories.length - 1) {
       setStoryIndex((prev) => prev + 1)
@@ -41,44 +43,66 @@ if(stories.length === 0)route.push('/story')
       routes!=='/nortoute'?route.push(routes):route.refresh()
     }
   }
-
+  
   if (!currentStory) return <div>No more stories</div>
-
+  
   const prevStory = () => {
-  if (!currentUser || !currentStory) return;
-
-  if (storyIndex > 0) {
-    setStoryIndex((prev) => prev - 1);
-    setProgressKey((prev) => prev - 1);
-  } else if (userIndex > 0) {
-    const previousUser = stories[userIndex - 1];
-    const lastStoryIndex = previousUser.stories.length - 1;
-    setUserIndex((prev) => prev - 1);
-    setStoryIndex(lastStoryIndex);
-    setProgressKey((prev) => prev - 1);
-  } else {
-    // Already at the first story of the first user
-    setStoryIndex(0);
-    setUserIndex(0);
-    setProgressKey(0);
-  }
-};
+    if (!currentUser || !currentStory) return;
+    
+    if (storyIndex > 0) {
+      setStoryIndex((prev) => prev - 1);
+      setProgressKey((prev) => prev - 1);
+    } else if (userIndex > 0) {
+      const previousUser = stories[userIndex - 1];
+      const lastStoryIndex = previousUser.stories.length - 1;
+      setUserIndex((prev) => prev - 1);
+      setStoryIndex(lastStoryIndex);
+      setProgressKey((prev) => prev - 1);
+    } else {
+      // Already at the first story of the first user
+      setStoryIndex(0);
+      setUserIndex(0);
+      setProgressKey(0);
+    }
+  };
+  
+  useEffect(() => {
+    if (!currentStory) return;
+    
+    controls.set({ width: 0 }); // Reset animation
+    if (!isPaused) {
+      controls.start({
+        width: '100%',
+        transition: { duration: 15 },
+      });
+    }else {
+      controls.stop(); // Pauses the animation
+    }
+  }, [userIndex, storyIndex, isPaused]);
+  
+  useEffect(()=>{
+    if(stories.length === 0 || !stories)route.push('/story')
+  },[])
 
 useEffect(() => {
-  if (!currentStory) return;
+  if (!audioRef.current || isPaused) return;
 
-  controls.set({ width: 0 }); // Reset animation
-  if (!isPaused) {
-    controls.start({
-      width: '100%',
-      transition: { duration: 6 },
-    });
-  }else {
-    controls.stop(); // Pauses the animation
-  }
-}, [userIndex, storyIndex, isPaused]);
+  const a = audioRef.current;
 
+  a.currentTime = currentStory.start;
+  a.play().catch(() => { /* autoplay block */ });
 
+  const onTime = () => {
+    if (a.currentTime >= currentStory.end) {
+      a.pause();
+    }
+  };
+
+  a.addEventListener('timeupdate', onTime);
+  return () => a.removeEventListener('timeupdate', onTime);
+}, [userIndex, storyIndex,isPaused]);
+
+  
   return (
     <div className="z-50 w-full h-full">
       <div className="block relative content-center bg-[#1a1e23] rounded-xl w-full h-full overflow-hidden">
@@ -133,12 +157,24 @@ useEffect(() => {
             alt="story"
             className="rounded-full size-8 object-cover"
           />
+          <div>
           <div className="font-bold">{currentUser.name}</div>
+          {currentStory.song && 
+            <>
+              <div className='flex gap-1 items-center'>
+                  <p className='size-6 animate-spin'><Music/></p>
+                  {currentStory.song.title} - 
+                  <p className='text-sm'>{currentStory.song.artist}</p>
+                </div>
+              <audio autoPlay ref={audioRef} src={`${currentStory.song.previewUrl}`}/>
+            </>
+          }
+          </div>
         </div>
         {routes === '/story/ownview' && <div className='top-2 right-2 absolute'>
           <button
             onClick={() => setIsPaused((prev) => !prev)}
-            className="size-8 text-white"
+            className="size-6 text-white"
           >
             <Menu/>
           </button>

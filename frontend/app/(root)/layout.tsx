@@ -6,8 +6,8 @@ const layout = ({children}:{children: React.ReactNode}) => {
     <main className='flex h-screen'>
       <div className='hidden sm:flex'><Sidebar/></div>
       <section className='flex flex-col flex-1'>
-        <div className='flex-1 px-3 lg:px-10 py-2 sm:py-10 w-full overflow-hidden'>{children}</div>
-        <div className='sm:hidden z-10 flex h-[76px]'><MobileNav/></div>
+        <div className='flex-1 px-3 lg:px-10 py-2 sm:py-10 w-full max-w-[750px] overflow-hidden'>{children}</div>
+        <div className='sm:hidden z-10 flex h-[60px]'><MobileNav/></div>
       </section>
     </main>
   )

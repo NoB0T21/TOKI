@@ -14,11 +14,16 @@ interface files{
     path: string,
     originalname: string,
     pictureURL: string,
+    SongId?: string,
+    start?: number,
+    end?: number,
 }
 
-export const  createfile = async ({creator,title,message,tags,owner,path,originalname,pictureURL}:files) => {
+export const  createfile = async ({creator,title,message,tags,owner,path,originalname,pictureURL,SongId,start,end }:files) => {
   if(!creator || !path || !originalname || !pictureURL || !owner) return
-  const file = await postModel.create({
+  let file
+  if(SongId){
+    file = await postModel.create({
       creator,
       title,
       message,
@@ -26,8 +31,23 @@ export const  createfile = async ({creator,title,message,tags,owner,path,origina
       owner: new Types.ObjectId(owner),
       path,
       originalname,
+      SongId,
+      start,
+      end,
       pictureURL,
   });
+  }else{
+    file = await postModel.create({
+        creator,
+        title,
+        message,
+        tags,
+        owner: new Types.ObjectId(owner),
+        path,
+        originalname,
+        pictureURL,
+    });
+  }
   
   const updatedPostcount = await PostCount.findOneAndUpdate(
     { owner: owner },

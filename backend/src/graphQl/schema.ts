@@ -7,6 +7,7 @@ import like from '../models/like.model'
 import PostCount from "../models/post.count.model"
 import storyModel from "../models/user.story.model"
 import storyview from "../models/story.views"
+import songs from "../models/songs.model"
 
 const now = new Date();
 
@@ -54,6 +55,15 @@ const StoryviewType = new GraphQLObjectType({
     })
 })
 
+const SongType = new GraphQLObjectType({
+    name:'song',
+    fields:()=>({
+        title:{type: GraphQLString},
+        artist:{type: GraphQLString},
+        previewUrl:{type: GraphQLString}
+    })
+})
+
 const UserType = new GraphQLObjectType({
     name:'User',
     fields:()=>({
@@ -94,6 +104,15 @@ const PostType:any = new GraphQLObjectType({
         originalname:{type: GraphQLString},
         createdAt:{type: GraphQLString},
         owner:{type: GraphQLString},
+        SongId:{type: GraphQLString},
+        start:{type: GraphQLInt},
+        end:{type: GraphQLInt},
+        song:{
+            type:SongType,
+            resolve(parent,args){
+                return songs.findOne({_id:parent.SongId})
+            }
+        },
         like:{
             type:PostLikeType,
             resolve(parent,args){
@@ -135,10 +154,18 @@ const StoryType = new GraphQLObjectType({
         userID:{type: GraphQLString},
         imageUrl:{type: GraphQLString},
         createdAt:{type: GraphQLString},
+        start:{type: GraphQLInt},
+        end:{type: GraphQLInt},
         views:{
             type:StoryviewType,
             resolve(parent,args){
                 return storyview.findOne({storyID:parent._id})
+            }
+        },
+        song:{
+            type:SongType,
+            resolve(parent,args){
+                return songs.findOne({_id:parent.SongId})
             }
         }
     })

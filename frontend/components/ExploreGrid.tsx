@@ -1,10 +1,10 @@
 'use client'
 
-import { Like, LikeFill } from "./Icons";
+import { Like, LikeFill, Music } from "./Icons";
 import Image from 'next/image'
 import Link from 'next/link'
 import Cookies from "js-cookie";
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {motion} from 'motion/react'
 import { Posts } from '@/Types/types';
 import { followusers, likePosts } from '@/utils/clientAction';
@@ -22,6 +22,7 @@ const ExploreGrid = ({post, LikeCount,Likes,Following}:Prop) => {
   const [following, setFollowing ] = useState<string[]>(Following)
   const [likecount, setLikeCount ] = useState<number>(LikeCount)
   const [like, setLike ] = useState<string[]>(Likes)
+  const audioRef = useRef<HTMLAudioElement>(null);
   
   const likePost = async () => {    
     const data = await likePosts({id:post.id})
@@ -59,6 +60,23 @@ const ExploreGrid = ({post, LikeCount,Likes,Following}:Prop) => {
     }
   }
 
+  useEffect(()=>{
+    if (!audioRef.current) return;
+  
+    const a = audioRef.current;
+  
+    a.currentTime = post.start;
+  
+    const onTime = () => {
+      if (a.currentTime >= post.end) {
+        a.pause();
+      }
+    };
+  
+    a.addEventListener('timeupdate', onTime);
+    return () => a.removeEventListener('timeupdate', onTime);
+  },[])
+
   return (
     <>
       <div className="relative flex flex-col sm:justify-between items-start gap-7 bg-gradient-to-t from-[rgba(5,11,15,1)] to-[rgba(14,18,23,1)] p-5 py-8 rounded-2xl w-full md:w-2/3 xl:w-350 h-[91vh] sm:h-full overflow-y-scroll">
@@ -71,8 +89,18 @@ const ExploreGrid = ({post, LikeCount,Likes,Following}:Prop) => {
               height={500}
               className="rounded-full size-[30px] sm:size-11 object-cover"
             />
-            <div className="flex items-center gap-3 px-2">
-              <div className="truncate">{post.user.name}</div>
+            <div className="flex flex-col text-sm md:text-md justify-center px-2">
+              <div className="truncate px-2">{post.user.name}</div>
+              {post.song &&
+                <>
+                  {post.song.previewUrl&&<audio autoPlay ref={audioRef} src={`${post.song.previewUrl}`}/>}
+                  <div className='flex gap-1 items-center'>
+                      <p className='size-6 animate-spin'><Music/></p>
+                      {post.song.title} - 
+                      <p className='text-sm'>{post.song.artist}</p>
+                    </div>
+                </>
+              }
             </div>
           </Link>
           <motion.div

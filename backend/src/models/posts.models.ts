@@ -10,6 +10,9 @@ interface Post{
     path: string,
     createdAt:string,
     owner:Types.ObjectId
+    SongId: Types.ObjectId,
+    start:number;
+    end:number
 }
 
 const postSchema:Schema<Post> = new mongoose.Schema({
@@ -47,6 +50,15 @@ const postSchema:Schema<Post> = new mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId,
         required: true,
         ref:'user'
+    },
+    SongId: { type:mongoose.Schema.Types.ObjectId,ref:'songs'},
+    start:{
+        type:Number,
+        default:0
+    },
+    end:{
+        type:Number,
+        default:60
     }
 })
 

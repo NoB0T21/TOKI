@@ -83,8 +83,10 @@ const GoogleForm = () => {
 
   return (
     <>
-      <div className="mt-5 w-2/3 lg:w-1/2">
-        <button onClick={()=>handleGoogleLogin()} className="bg-indigo-600 hover:bg-indigo-700 p-2 rounded-md w-full font-semibold text-md"><div className="flex justify-center gap-2 w-full h-6"><Google/>Google</div></button>
+      <div className=" max-w-[350px] w-2/3 lg:w-1/2">
+        <button onClick={()=>handleGoogleLogin()} className="bg-[#29d1da] hover:bg-[#2EF6FF] hover:scale-103 p-1 rounded-md w-full transition-(scale) duration-300 ease-in-out font-semibold text-md">
+          <div className="flex justify-center items-center gap-1 "><Google/>Google</div>
+        </button>
       </div>
       {showToast && <Toasts type={tostType==='warningMsg'?'warningMsg':'infoMsg'} msg={responseMsg}/>}
     </>

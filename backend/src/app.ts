@@ -5,6 +5,7 @@ import cors from 'cors';
 import userRoutes from './routes/user.route'
 import postsRoutes from './routes/post.route'
 import storyRoutes from './routes/story.route'
+import songRoutes from './routes/Songs.route'
 import database from './Db/mongodb';
 import schema from './graphQl/schema'
 import middleware from './middleware/middleware';
@@ -23,6 +24,7 @@ app.use(cors({
 app.use('/user',userRoutes)
 app.use('/post',postsRoutes)
 app.use('/story',storyRoutes)
+app.use('/music',songRoutes)
 app.use('/data',middleware,graphqlHTTP({schema,graphiql:true}))
 
 app.use('/gg',graphqlHTTP({schema,graphiql:true}));

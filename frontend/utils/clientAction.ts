@@ -89,3 +89,14 @@ export const addviewStory= async ({id}:{id:string}) => {
     })
     return Ids.data
 }
+
+export const getSongs= async ({query}:{query:string}) => {
+    const token = Cookies.get('token')
+    const Ids = await api.get(`/music/search?q=${query}`,{
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+        withCredentials: true
+    })
+    return Ids.data
+}

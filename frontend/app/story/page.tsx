@@ -10,6 +10,18 @@ import { DraggableElement } from '@/components/story/DraggableElement'
 import { AnimatePresence, motion} from 'motion/react'
 import { poststoryapi } from '@/utils/clientAction'
 import { useRouter } from 'next/navigation'
+import MusicSelect from '@/components/story/MusicSelect'
+import { ScaleLoader } from 'react-spinners'
+
+interface Track {
+  _id: string;
+  title: string;
+  artist: string;
+  previewUrl: string;
+  duration: number;
+  start: number; // user-selected start second
+  end: number;   // user-selected end second
+}
 
 // ---------------------- Main Page ----------------------
 export default function Page() {
@@ -21,6 +33,7 @@ export default function Page() {
   const [text, setText] = useState('Hello 👋')
   const [size, setSize] = useState(16)
   const [z, setZ] = useState<number>(1)
+  const [Track, setTrack] = useState<Track>()
   const [show, setShow] = useState(false)
   const [bgColor, setBgColor] = useState<string>('#1a1e23')
   const [stickers] = useState<string[]>(['🔥', '🎉', '🌟'])
@@ -114,6 +127,9 @@ export default function Page() {
     const form = new FormData()
     form.append('image', blob)
     form.append('userID', userId || '')
+    form.append('SongId', Track?._id || '')
+    form.append('start', Track?.start.toString() || '0')
+    form.append('end', Track?.end.toString() || '15')
     
     const res = await poststoryapi({form})
     route.push('/')
@@ -139,6 +155,11 @@ export default function Page() {
       setZ(selectedElement.z || 1)
     }
   }, [selectedElement])
+
+  const handleTrackSelect = (track: Track & { start: number, end: number }) => {
+  // Save to state or send to backend
+  setTrack(track)
+};
 
   return (
     <div className="flex p-4 w-full h-screen overflow-clip">
@@ -195,7 +216,10 @@ export default function Page() {
         onClick={()=>setShow(!show)}
       >{show ?'close':'Add'}</motion.div>
 
+
+      
       <AnimatePresence mode='popLayout'>
+        
         {show && 
           <motion.div
             key={1}
@@ -204,6 +228,14 @@ export default function Page() {
             exit={{x: -300}}
             className='sm:hidden block top-0 left-0 z-1000 absolute bg-[#1a1e23] p-5 border-[#3e4a57] border-1 rounded-2xl w-[86%] h-full overflow-y-auto'
           >
+            <MusicSelect reg={15} onSelect={handleTrackSelect}/>
+            {Track && <div className='text-sm'>
+              <div className='flex gap-2'>
+                song: {Track.title} by {Track.artist} 
+                <div className='drop-shadow-blue-400/80 drop-shadow-xl fill-indigo-500'><ScaleLoader margin={1} height={20} width={3} radius={50} color='#2EF6FF' speedMultiplier={1.5}/></div>
+              </div>
+              <div className='bg-red-500 mb-3 px-2 py-1 rounded-md w-16' onClick={()=>setTrack(undefined)}>remove</div>
+            </div>}
             <div className="space-y-3">
               <input
                 type="text"
@@ -397,6 +429,14 @@ export default function Page() {
             exit={{x: -300}}
             className='hidden sm:block p-5 w-1/2 h-full overflow-y-auto'
           >
+            <MusicSelect reg={15} onSelect={handleTrackSelect}/>
+            {Track && <div className='text-sm'>
+              <div className='flex gap-2'>
+                song: {Track.title} by {Track.artist} 
+                <div className='drop-shadow-blue-400/80 drop-shadow-xl fill-indigo-500'><ScaleLoader margin={1} height={20} width={3} radius={50} color='#2EF6FF' speedMultiplier={1.5}/></div>
+              </div>
+              <div className='bg-red-500 mb-3 px-2 py-1 rounded-md w-16' onClick={()=>setTrack(undefined)}>remove</div>
+            </div>}
             <div className="space-y-3">
               <input
                 type="text"

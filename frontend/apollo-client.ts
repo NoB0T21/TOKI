@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 const createApolloClient = async () => {
   const token = (await cookies()).get('token')?.value || ''
   const httpLink = new HttpLink({
-    uri: 'http://localhost:4000/data',
+    uri: `${process.env.NEXT_PUBLIC_BASE_URL}/data`,
     credentials: 'include',
     fetch,
     headers: {

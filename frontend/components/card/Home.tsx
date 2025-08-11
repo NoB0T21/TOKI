@@ -2,15 +2,18 @@
 import { gethomepostpageintion } from '@/queries/Queries';
 import { useLazyQuery } from '@apollo/client';
 import { Posts2 } from '@/Types/types';
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { getFollowingPosts } from '@/utils/clientApollo';
 import PostCard from './PostCard';
 
 const Home = ({ids}:{ids:string[]}) => {
   const [posts,setPosts] = useState<Posts2[]>([]);
   const [hasMore, setHasMore] = useState(true);
+  const [play, setPlay] = useState(true);
   const [getfollowingPost] = useLazyQuery(gethomepostpageintion)
   const [skip, setSkip] = useState(0);
+   const containerRef = useRef<HTMLDivElement>(null)
+    const currentIndex = 0
 
   const fetchMore = async () => {
     if (!hasMore) return;
@@ -39,15 +42,26 @@ const Home = ({ids}:{ids:string[]}) => {
       setSkip(prev => prev + 1);
       }
   };
+
+  const handlepaly = (play:boolean) => {
+    setPlay(play)
+  }
       
   useEffect(() => {
       fetchMore();
   }, [skip]);
+
+  useEffect(() => {
+    if (containerRef.current) {
+      const postElement = containerRef.current.children[currentIndex] as HTMLElement
+      postElement?.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' })
+    }
+  }, [currentIndex])
   
   return (
-    <div onScroll={handleScroll} className='gap-1 grid grid-cols-1 w-full h-[80vh] overflow-y-scroll'>
+    <div ref={containerRef} onScroll={handleScroll} className='gap-1 rounded-md px-2 scroll-smooth grid grid-cols-1 w-full bg-[#1a1e23] pb-5 h-[78vh] overflow-y-scroll snap-mandatory snap-y'>
       {posts.map((post:Posts2)=>(
-        <PostCard key={post.id} followings={post.follower.count} file={post} profile={post.user.picture} name={post.user.name} userID={post.user.id}/>
+        <PostCard onSelect={handlepaly} key={post.id} play={play} followings={post.follower.count} file={post} profile={post.user.picture} name={post.user.name} userID={post.user.id}/>
       ))}
     </div>
   )

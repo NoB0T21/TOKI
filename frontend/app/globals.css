@@ -54,3 +54,36 @@ body {
 .chrome-picker label {
   color: #b0bec5 !important;
 }
+
+.animated-gradient:hover {
+  background-image: linear-gradient(
+    270deg,
+    #00c9ff,
+    #2afadf,
+    #4facfe,
+    #6f86d6,
+    #8e44ad,
+    #6f86d6,
+    #4facfe,
+    #2afadf,
+    #00c9ff
+  );
+  background-size: 600% 600%;
+  color: #1a1e23;
+  border-color: #1a1e23;
+}
+
+@theme {
+  --animate-wiggle: wiggle 9s ease-in-out infinite;
+  @keyframes wiggle {
+    0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+  }
+}

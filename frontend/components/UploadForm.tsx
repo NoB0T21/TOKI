@@ -1,17 +1,17 @@
 'use client'
 
 import { convertFileToUrl, fetchAICompletion, fetchAITegs } from "@/utils/utils";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { PulseLoader } from "react-spinners";
 import { z } from "zod";
-import { api } from "@/utils/api";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Toasts from "./toasts/Toasts";
-import Cookies from 'js-cookie'
 import { postFormapi } from "@/utils/clientAction";
 import { Gemini } from "./Icons";
 import { tryLoadManifestWithRetries } from "next/dist/server/load-components";
+import MusicSelect from "./story/MusicSelect";
+import {Track} from '../Types/types'
 
 const formSchema = z.object({
     creator: z.string().min(1, "creator required"),
@@ -21,7 +21,7 @@ const formSchema = z.object({
 
 const UploadForm = () => {
     const router = useRouter()
-    const user = JSON.parse(localStorage.getItem('user') || '')
+    const [user,SetUser] = useState<any>()
     const [formData, setFormData] = useState<{
         creator: string;
         title?: string;
@@ -41,6 +41,7 @@ const UploadForm = () => {
         files?: string;
     }>({})
     const [files, setFiles] = useState<File>();
+    const [Track, setTrack] = useState<Track>()
     const [loading,setLoading] = useState(false)
     const [inputValue, setInputValue] = useState('');
     const [showToast,setShowToast] = useState(false)
@@ -49,40 +50,52 @@ const UploadForm = () => {
     const [responseMsg,setResponseMsg] = useState('')
     const [tostType,setTostType] = useState('warningMsg')
     const [isGenerating, setIsGenerating] = useState(false);
-
-
+    
+    
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         let vlue =e.target.value
         setInputValue(e.target.value);
         if (!vlue.includes("/")) setShowtag(false)
-        if (vlue.includes("/")) setShowtag(true)
-    };
-
-    const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-      if (e.key === 'Enter' || e.key === ',' && inputValue.trim() !== '') {
-        const newTags = inputValue
-            .split(',')
-            .map(tag => tag.trim())
-            .filter(tag => tag.length > 0)
-            .map(tag => (tag.startsWith('#') ? tag : `#${tag}`))
-            .filter(tag => !(formData.tags|| []).includes(tag));
-        if (newTags.length > 0) {
-            setFormData(prev => ({
-            ...prev,
-            tags: [...(prev.tags|| []), ...newTags],
+            if (vlue.includes("/")) setShowtag(true)
+            };
+        
+        const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+            if (e.key === 'Enter' || e.key === ',' && inputValue.trim() !== '') {
+                const newTags = inputValue
+                .split(',')
+                .map(tag => tag.trim())
+                .filter(tag => tag.length > 0)
+                .map(tag => (tag.startsWith('#') ? tag : `#${tag}`))
+                .filter(tag => !(formData.tags|| []).includes(tag));
+                if (newTags.length > 0) {
+                    setFormData(prev => ({
+                        ...prev,
+                        tags: [...(prev.tags|| []), ...newTags],
             }));
         }
-
+        
         setInputValue('');
-      }
-    };
+    }
+};
 
-    const removeTag = (indexToRemove: number) => {
-        setFormData((prev) => ({
-            ...prev,
-            tags: (prev.tags|| []).filter((_, index) => index !== indexToRemove),
+const removeTag = (indexToRemove: number) => {
+    setFormData((prev) => ({
+        ...prev,
+        tags: (prev.tags|| []).filter((_, index) => index !== indexToRemove),
         }));
     };
+    
+useEffect(() => {
+    const use = JSON.parse(localStorage.getItem('user') || '')
+    SetUser(use)
+    setFormData({
+        creator:use?.name, 
+        title:'',
+        message:'',
+        tags:[],
+        owner:use?._id,
+    })
+}, []);
 
      const clear = () => {
         setError({files:''});
@@ -125,6 +138,7 @@ const UploadForm = () => {
                 files: errorMessages.files?.[0],
             })
             setLoading(false)
+            console.log(formData)
             return
         }
 
@@ -140,6 +154,9 @@ const UploadForm = () => {
             form.append('message', formData.message || '');
             form.append('tags', JSON.stringify(formData.tags || []));
             form.append('owner', formData.owner || '');
+            form.append('SongId', Track?._id || '')
+            form.append('start', Track?.start.toString() || '0')
+            form.append('end', Track?.end.toString() || '30')
             if (files) {
                 form.append('file', files);
             }
@@ -175,7 +192,7 @@ const UploadForm = () => {
             setShowToast(false)
         }, 3000);
         router.refresh()
-        router.push('/Profile')
+        router.push('/profile')
         return
     }
 
@@ -251,6 +268,10 @@ const UploadForm = () => {
         }
     };
 
+    const handleTrackSelect = (track: Track & { start: number, end: number }) => {
+        // Save to state or send to backend
+        setTrack(track)
+    };
     
 
   return (
@@ -316,6 +337,7 @@ const UploadForm = () => {
                     <span>Tags</span>
                     </label>
                 </div>
+                <MusicSelect reg={60} onSelect={handleTrackSelect}/>
                 <div className="flex gap-3 w-2/3 lg:w-1/2">
                     {error.files && <p className="mb-1 text-red-500 text-xs">{error.files}</p>}
                     <div className="relative bg-zinc-700 p-2 rounded-md w-auto h-10">

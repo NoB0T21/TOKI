@@ -24,6 +24,13 @@ const Explore = () => {
     message:'',
     title:'',
     tags: [],
+    song:{
+        title: '',
+        artist: '',
+        previewUrl: '',
+      },
+    start:0,
+    end:60,
     like:{
       like: [],
       likeCount: 0
@@ -75,7 +82,7 @@ const Explore = () => {
 
          
   return (
-    <div onScroll={handleScroll} className='gap-1 grid grid-cols-4 grid-flow-dense auto-rows-[80px] md:auto-rows-[150px] w-full lg:w-1/2 overflow-y-scroll'>
+    <div onScroll={handleScroll} className='gap-1 grid grid-cols-4 grid-flow-dense auto-rows-[80px] md:auto-rows-[150px] w-full h-full overflow-y-scroll'>
       {posts.map((post,index)=>(
         <div 
           key={post.id}
@@ -102,6 +109,13 @@ const Explore = () => {
               message:'',
               title:'',
               tags: [],
+              song:{
+                title: '',
+                artist: '',
+                previewUrl: '',
+              },
+              start:0,
+              end:60,
               like:{
                   like: [],
                   likeCount: 0

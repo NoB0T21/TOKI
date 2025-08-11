@@ -57,6 +57,13 @@ export  const getpost = gql`
         id
         pictureURL
         owner
+        song{
+                title
+                artist
+                previewUrl
+            }
+        start
+        end
         }
     }
 `
@@ -71,6 +78,13 @@ export  const getpostpageintion = gql`
             tags
             message
             originalname
+            song{
+                title
+                artist
+                previewUrl
+            }
+            start
+            end
             like{
                 like
                 likeCount
@@ -87,6 +101,13 @@ export  const getexplorepostpageintion = gql`
             message
             title
             tags
+            song{
+                title
+                artist
+                previewUrl
+            }
+            start
+            end
             like{
                 like
                 likeCount
@@ -135,6 +156,13 @@ export  const gethomepostpageintion = gql`
             tags
             message
             originalname
+            song{
+                title
+                artist
+                previewUrl
+            }
+            start
+            end
             like{
                 like
                 likeCount
@@ -179,10 +207,17 @@ export  const getstory = gql`
       userID
       imageUrl
       createdAt
+      start
+      end
       views{
         count
         storyviewsCount
       }
+      song{
+        title
+        artist
+        previewUrl
+      }  
     }
   }
 }

@@ -64,6 +64,9 @@ const Userprofile = ({userId , user}:{userId:string,user:User2}) => {
     }
   }, [currentIndex])
 
+  const unwanted = () => {
+    return
+  }
 
   return (
     <>
@@ -98,13 +101,13 @@ const Userprofile = ({userId , user}:{userId:string,user:User2}) => {
           </div>
       </>}
       {show && 
-      <div className='py-5 w-full h-full'>
+      <div className='py-5 w-screen h-full relative bottom-[30px]'>
         <h1 className='top-1 z-9 sticky flex gap-3 font-bold text-2xl'>
           <div onClick={()=>setShow(false)}>back</div> Posts
         </h1>
-        <div ref={containerRef} onScroll={handleScroll} className="gap-4 grid mt-5 w-full h-[80vh] overflow-y-scroll scroll-smooth snap-mandatory snap-y">
+        <div ref={containerRef} onScroll={handleScroll} className="gap-4 grid mt-5 w-full h-full overflow-y-scroll scroll-smooth snap-mandatory snap-y">
           {posts.map((f:any)=>(
-            <PostCard key={f.id} followings={user.follower.count} file={f} profile={user.picture} name={user.name} userID={userId}/>
+            <PostCard onSelect={unwanted} key={f.id} play followings={user.follower.count} file={f} profile={user.picture} name={user.name} userID={userId}/>
           ))} 
         </div>
       </div>}

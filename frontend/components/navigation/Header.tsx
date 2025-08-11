@@ -1,13 +1,14 @@
 import Image from 'next/image'
 import LogoutBtn from './LogoutBtn'
+import Link from 'next/link'
 
 export const DashboardHeader = () => {
   return (
-    <div className='flex justify-between sm:justify-end items-center w-full h-12'>
-      <div className='sm:hidden flex items-center gap-[6px] sm:gap-[10px]'>
+    <div className='flex justify-between sm:justify-end items-center py-2 w-full h-8'>
+      <Link href={'/'} className='sm:hidden flex items-center gap-[6px] sm:gap-[10px]'>
         <Image className='size-8' src={'/images/Logo.png'} alt='Logo' width={300} height={300}/>
         <p className='font-semibold font-stretch-140% text-xl'>Toki</p>
-      </div>
+      </Link>
       <LogoutBtn/>
     </div>
   )
