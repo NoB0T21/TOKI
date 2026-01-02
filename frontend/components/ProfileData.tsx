@@ -91,10 +91,11 @@ const ProfileData = ({picture,posts,follower,following,followerlist,followinglis
           </div>
       </div>
       {showFlowing && (
-        <div className='top-0 left-0 z-6 absolute flex justify-center items-center gap-2 backdrop-blur-sm w-full h-full'>
-          <div className='py-5 md:py-10 h-full'><p onClick={()=>setShowFlowing(false)} className='flex justify-center items-center bg-red-500 p-1 rounded-md size-7 text-xl'>X</p></div>
-          
-          <div className="mb-3 py-5 md:py-10 w-110 lg:w-150 h-full">
+        <div className='top-0 left-0 z-6 absolute flex flex-col justify-center items-center gap-2 backdrop-blur-sm overflow-hidden w-screen h-screen'>
+          <div className='w-110 lg:w-150 flex flex-col justify-center h-full'>
+            <div className='flex justify-end'><p onClick={()=>setShowFlowing(false)} className='flex justify-center cursor-pointer items-center bg-red-500 p-1 rounded-md size-7 text-xl'>X</p></div>
+            { usersfollowing.length > 0 ?
+              <div className="mb-3 py-5 w-110 lg:w-150 h-full">
                 <div className="flex flex-col items-center gap-7 bg-[#1a1e23] p-3 border-[#3e4a57] border-1 rounded-2xl w-full h-full">
                   <h1 className="font-semibold text-2xl">Following</h1>
                   <div onScroll={handleFollowingScroll} className="flex flex-col gap-3 w-full h-full">
@@ -103,13 +104,18 @@ const ProfileData = ({picture,posts,follower,following,followerlist,followinglis
                       ))}
                   </div>
                 </div>
-              </div>
+              </div> :
+              <div className="font-bold text-2xl">Fuck you, you fucking blind don't u see it say's 0</div>
+            }
+          </div>
         </div>
       )}
       {showFlower && (
-        <div className='top-0 left-0 z-6 absolute flex justify-center items-center gap-2 backdrop-blur-sm w-full h-full'>
-          <div className='py-10 h-full'><p onClick={()=>setShowFlower(false)} className='flex justify-center items-center bg-red-500 p-1 rounded-md size-7 text-xl'>X</p></div>
-          <Followers user={user} followinglist={followerlist}/>
+        <div className='top-0 left-0 z-6 absolute flex flex-col justify-center items-center gap-2 backdrop-blur-sm overflow-hidden w-screen h-screen'>
+          <div className='w-110 lg:w-150 flex flex-col justify-center h-full'>
+            <div className='flex justify-end'><p onClick={()=>setShowFlower(false)} className='flex cursor-pointer justify-center items-center bg-red-500 p-1 rounded-md size-7 text-xl'>X</p></div>
+            <Followers followinglist={followerlist}/>
+          </div>
         </div>
       )}
       {(showsory && story) && (

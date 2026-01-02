@@ -12,10 +12,9 @@ import Toasts from "../toasts/Toasts";
 
 interface Following{
     followinglist:string[],
-    user:any
 }
 
-const Followers = ({followinglist,user}:Following) => {
+const Followers = ({followinglist}:Following) => {
   const token = Cookies.get('token');
   const userID = Cookies.get('user') || '';
   const [getuserList] = useLazyQuery(getfollowinguser)

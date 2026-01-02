@@ -141,6 +141,7 @@ const MusicSelect = ({ onSelect,reg }: {reg:number, onSelect: (track: Track & { 
             <motion.button 
                 className="flex items-center gap-1 bg-[#1a1e23] px-3 py-1 border-[#3e4a57] border-1 rounded-md w-19 text-xs" 
                 onClick={() => pick(t)}
+                type='button'
                 style={{
                     ...(active?._id===t._id&&{backgroundImage: 'linear-gradient(270deg, #00c9ff, #2afadf, #4facfe, #6f86d6, #8e44ad,#6f86d6,#4facfe,#2afadf,#00c9ff)',
                     backgroundSize: '600% 600%',})
@@ -191,6 +192,7 @@ const MusicSelect = ({ onSelect,reg }: {reg:number, onSelect: (track: Track & { 
           <motion.button
           whileTap={{scale:0.8}}
             className="bg-yellow-500 mt-4 px-2 py-1 rounded text-white"
+            type='button'
             onClick={() => {onSelect({ ...active, start: range[0], end: range[1] });setResults([]);setActive(null)}}
           >
             Add Song

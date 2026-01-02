@@ -5,6 +5,7 @@ import { Posts2 } from '@/Types/types';
 import { useEffect, useRef, useState } from 'react'
 import { getFollowingPosts } from '@/utils/clientApollo';
 import PostCard from './PostCard';
+import { NoPosts } from '../Icons';
 
 const Home = ({ids}:{ids:string[]}) => {
   const [posts,setPosts] = useState<Posts2[]>([]);
@@ -30,25 +31,24 @@ const Home = ({ids}:{ids:string[]}) => {
         const unique = Array.from(
           new Map(merged.map((p) => [p.id, p])).values()
         );
-        //const unique = [...new Set(merged)]
         return unique;
       });
     }
   }
-
+  
   const handleScroll = (e: React.UIEvent<HTMLElement>) => {
-      const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
-      if (scrollTop + clientHeight >= scrollHeight - 100 && hasMore) {
+    const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
+    if (scrollTop + clientHeight >= scrollHeight - 100 && hasMore) {
       setSkip(prev => prev + 1);
       }
   };
-
+  
   const handlepaly = (play:boolean) => {
     setPlay(play)
   }
-      
+  
   useEffect(() => {
-      fetchMore();
+    fetchMore();
   }, [skip]);
 
   useEffect(() => {
@@ -60,9 +60,15 @@ const Home = ({ids}:{ids:string[]}) => {
   
   return (
     <div ref={containerRef} onScroll={handleScroll} className='gap-1 rounded-md px-2 scroll-smooth grid grid-cols-1 w-full bg-[#1a1e23] pb-5 h-[78vh] overflow-y-scroll snap-mandatory snap-y'>
-      {posts.map((post:Posts2)=>(
-        <PostCard onSelect={handlepaly} key={post.id} play={play} followings={post.follower.count} file={post} profile={post.user.picture} name={post.user.name} userID={post.user.id}/>
-      ))}
+      {posts.length > 0 ? 
+        posts.map((post:Posts2)=>(
+          <PostCard onSelect={handlepaly} key={post.id} play={play} followings={post.follower.count} file={post} profile={post.user.picture} name={post.user.name} userID={post.user.id}/>
+        )) : 
+        <div className='text:2xl md:text-4xl flex flex-col justify-center items-center text-[#8a8a8a]'>
+          <div className='size-9 md:size-12'><NoPosts/></div>
+          Follow to see posts
+        </div>
+      }
     </div>
   )
 }

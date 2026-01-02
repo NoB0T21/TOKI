@@ -84,8 +84,8 @@ const Explore = () => {
 
          
   return (
-    <div onScroll={handleScroll} ref={scrollRef} className='gap-1 grid grid-cols-4 grid-flow-dense auto-rows-[80px] md:auto-rows-[150px] w-full h-full overflow-y-scroll'>
-      {posts.map((post,index)=>(
+    <div onScroll={handleScroll} ref={scrollRef} className={`gap-1 ${posts.length > 0 ? 'grid' : 'flex'} grid-cols-4 grid-flow-dense auto-rows-[80px] md:auto-rows-[150px] w-full h-full overflow-y-scroll`}>
+      {posts.length > 0 ? posts.map((post,index)=>(
         <div 
           key={post.id}
           onClick={()=>{
@@ -100,41 +100,10 @@ const Explore = () => {
               className={` rounded-md w-full h-full object-cover`}
             />
         </div>
-      ))}
+      )) : <div className="w-full h-full flex justify-center items-center">There is problem with server</div>}
       {post.id && 
         <div className="top-0 left-0 absolute flex justify-between gap-2 backdrop-blur-sm p-2 md:p-10 w-full h-full">
-          <div 
-            onClick={()=>setPost({
-              id: '',
-              pictureURL: '',
-              message:'',
-              title:'',
-              tags: [],
-              song:{
-                title: '',
-                artist: '',
-                previewUrl: '',
-              },
-              start:0,
-              end:60,
-              like:{
-                  like: [],
-                  likeCount: 0
-              }, 
-              following:{
-                      count:[]
-              }, 
-              follower:{
-                      count:[]
-              },
-              user:{
-                id: '',
-                picture: '',
-                name:''
-              }
-            })}
-            className="top-7 md:top-0 right-10 md:right-0 z-5 absolute md:relative flex justify-center items-center bg-red-500 p-2 rounded-md size-6 md:size-8 text-2xl"
-          >
+          <div className="top-7 md:top-0 right-10 md:right-0 z-5 absolute md:relative flex justify-center items-center bg-red-500 p-2 rounded-md size-6 md:size-8 text-2xl">
             <p>x</p>
           </div>
           <ExploreGrid post={post} Likes={post.like.like} LikeCount={post.like.likeCount} Following={post.follower.count}/>

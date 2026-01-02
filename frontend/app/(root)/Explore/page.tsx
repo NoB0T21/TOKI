@@ -6,7 +6,7 @@ const page = async () => {
   return (
     <>
       <ExploreHeader/>
-      <div className='sm:bg-[#1a1e23] p-5 sm:rounded-2xl w-full h-[95%] overflow-auto'>
+      <div className='sm:bg-[#1a1e23] p-5 sm:rounded-2xl w-full h-full overflow-y-auto'>
         <ApolloWrapper>
             <Explore/>
         </ApolloWrapper>

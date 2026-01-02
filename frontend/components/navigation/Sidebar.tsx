@@ -5,7 +5,7 @@ import Link from 'next/link'
 
 const Sidebar = () => {
   return (
-    <div className='flex flex-col items-center px-4 w-[75px] lg:w-[250px] xl:w-[300px] transition-(w) duration-200 ease-in-out py-5'>
+    <div className='flex flex-col items-center px-4 w-[75px] lg:w-[220px] xl:w-[280px] transition-(w) duration-200 ease-in-out py-5'>
       <Link href={'/'} className="flex justify-center items-center mb-5 p-1 w-full h-1/6 sm:size-19">
         <Image className='p-2 sm:w-full' src={'/Images/Logo.png'} width={200} height={200} alt="logo"/>
         <p className='hidden lg:block content-center font-semibold text-4xl'>Toki</p>

@@ -3,7 +3,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 const ai = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
 const model = ai.getGenerativeModel({
-  model: "gemini-2.0-flash-exp",
+  model: "gemini-2.5-flash",
   systemInstruction: `You are an intelligent AI writing assistant that helps users extend their text naturally and contextually within a rich-text editor environment. Your goal is to provide meaningful, relevant continuations that feel like they were written by the same author.
 
 **Core Principles:**
@@ -68,7 +68,6 @@ When you receive content, first identify: What type of writing is this? What's t
 export async function POST(req: NextRequest) {
   try {
     const { prompt,context } = await req.json();
-
     if (!prompt) {
       return NextResponse.json({ error: "Missing prompt" }, { status: 400 });
     }
@@ -84,7 +83,7 @@ export async function POST(req: NextRequest) {
 
 
     // ✅ only gemini-pro works here
-    const response = await model.generateContentStream({
+    const response = await model.generateContent({
         contents: [
         {
           role: 'user',
@@ -97,30 +96,8 @@ export async function POST(req: NextRequest) {
       ],
       generationConfig,
     });
-
-    const stream = new ReadableStream({
-      async start(controller) {
-        try {
-          for await (const textPart of response.stream) {
-            const text = textPart.text() ?? "";
-            if (text) {
-              controller.enqueue(new TextEncoder().encode(text));
-            }
-          }
-          controller.close();
-        } catch (err) {
-          console.error('Stream error:', err);
-          controller.error(err);
-        }
-      },
-    });
-
-     return new Response(stream, {
-      headers: {
-        'Content-Type': 'text/plain; charset=utf-8',
-        'Cache-Control': 'no-cache',
-      }
-    });
+    const text = response.response.text();
+    return NextResponse.json({ text });
   } catch (error) {
     console.error("Gemini Error:", error);
     return NextResponse.json({ error: "Something went wrong" }, { status: 500 });

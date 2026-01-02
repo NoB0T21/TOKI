@@ -171,3 +171,9 @@ export interface Track {
   start: number; // user-selected start second
   end: number;   // user-selected end second
 }
+
+export enum PostUploadPage {
+  page1 = 1,
+  page2 = 2,
+  page3 = 3,
+}

@@ -15,7 +15,7 @@ export const getSongs = async (req:Request,res:Response) => {
                     { title: { $regex: q, $options: 'i' } },
                     { artist: { $regex: q, $options: 'i' } },
                 ]
-            }).limit(6)
+            }).limit(4)
 
             return res.status(200).json({
                 message: "Songs",

@@ -18,7 +18,7 @@ const Readmore: React.FC<Props> = ({ text, maxLength = 100 }) => {
   };
   
   return (
-    <div className="text-gray-200 text-sm">
+    <div className="text-gray-500 text-sm">
       <pre className="break-words whitespace-pre-wrap">
         <code>{displayText}</code>
       </pre>

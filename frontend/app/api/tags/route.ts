@@ -3,7 +3,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 const ai = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
 const model = ai.getGenerativeModel({
-  model: "gemini-2.0-flash-exp",
+  model: "gemini-2.5-flash",
   systemInstruction: `You are an intelligent AI assistant that specializes in generating relevant and trending **hashtags** based on user content.
     Your job is to analyze the user's message and return a list of 6–8 highly relevant hashtags, formatted as a comma-separated string. 
 
@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
 
 
     // ✅ only gemini-pro works here
-    const response = await model.generateContentStream({
+    const response = await model.generateContent({
         contents: [
         {
           role: 'user',
@@ -68,29 +68,8 @@ export async function POST(req: NextRequest) {
       generationConfig,
     });
 
-    const stream = new ReadableStream({
-      async start(controller) {
-        try {
-          for await (const textPart of response.stream) {
-            const text = textPart.text() ?? "";
-            if (text) {
-              controller.enqueue(new TextEncoder().encode(text));
-            }
-          }
-          controller.close();
-        } catch (err) {
-          console.error('Stream error:', err);
-          controller.error(err);
-        }
-      },
-    });
-
-     return new Response(stream, {
-      headers: {
-        'Content-Type': 'text/plain; charset=utf-8',
-        'Cache-Control': 'no-cache',
-      }
-    });
+    const text = response.response.text();
+    return NextResponse.json({ text });
   } catch (error) {
     console.error("Gemini Error:", error);
     return NextResponse.json({ error: "Something went wrong" }, { status: 500 });

@@ -4,16 +4,14 @@ import Home from '@/components/card/Home'
 import React from 'react'
 import StoryBar from '@/components/story/StoryBar'
 import { getuserfollowing } from '@/utils/serverActions'
-import { getuserstorys } from '@/utils/apolloclient'
 
 const page = async () => {
   const usersFollowing = await getuserfollowing()
-  const getUsers = await getuserstorys({ids:usersFollowing})
 
   return (
-    <div>
+    <div className='w-full h-full'>
       <DashboardHeader/>
-      <StoryBar stories={getUsers.userstories}/>
+      <StoryBar ids={usersFollowing}/>
       <ApolloWrapper>
           <Home ids={usersFollowing}/>
       </ApolloWrapper>
