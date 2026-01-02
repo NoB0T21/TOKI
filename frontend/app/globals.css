@@ -24,7 +24,7 @@ input[type=number] {
 }
 
 ::-webkit-scrollbar {
-  width: 0px;
+  width: 8px;
 }
 ::-webkit-scrollbar-thumb {
   background: gray; 
@@ -69,12 +69,45 @@ body {
     #00c9ff
   );
   background-size: 600% 600%;
-  color: #1a1e23;
+  color: var(--foreground);
+  border-color: #1a1e23;
+}
+
+.animated-gradient2 {
+  background-image: linear-gradient(
+    230deg,
+    #00c9ff,
+    #2afadf,
+    #4facfe,
+    #6f86d6,
+    #8e44ad,
+    #6f86d6,
+    #4facfe,
+    #2afadf,
+    #00c9ff
+  );
+  background-size: 600% 600%;
+  color: var(--foreground);
   border-color: #1a1e23;
 }
 
 @theme {
   --animate-wiggle: wiggle 9s ease-in-out infinite;
+  @keyframes wiggle {
+    0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+  }
+}
+
+@theme {
+  --animate-wiggle2: wiggle 20s ease-in-out infinite;
   @keyframes wiggle {
     0% {
     background-position: 0% 50%;

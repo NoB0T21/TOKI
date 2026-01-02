@@ -12,10 +12,10 @@ import Toasts from "../toasts/Toasts";
 
 interface Following{
     followinglist:string[],
-    id:string
+    user:any
 }
 
-const Followers = ({followinglist,id}:Following) => {
+const Followers = ({followinglist,user}:Following) => {
   const token = Cookies.get('token');
   const userID = Cookies.get('user') || '';
   const [getuserList] = useLazyQuery(getfollowinguser)
@@ -105,7 +105,7 @@ const Followers = ({followinglist,id}:Following) => {
                           />
                           {user.name}
                         </div>
-                        
+                         
                         {userID !== user.id ? 
                         <div className="px-2 border-1 rounded-md" onClick={()=>removeuser({CreatorId:user.id})}>remove</div>
                         : 'helo'}

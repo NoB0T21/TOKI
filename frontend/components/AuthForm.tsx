@@ -150,7 +150,7 @@ const AuthForm = ({type}: {type: FormType}) => {
         <form onSubmit={handleSubmit} className="flex flex-col items-center gap-4 p-1 rounded-md w-full">
             {type === 'sign-up' && (
                 <>
-                    <div className="relative max-w-[350px] w-2/3 lg:w-1/2">
+                    <div className="relative max-w-[400px] w-full">
                         {error.name && <p className="mb-1 text-red-500 text-xs">{error.name}</p>}
                         <input name='name' type="text" value={formData.name} onChange={(e) => {setFormData({...formData, name: e.target.value})}}required 
                             className="peer bg-[#212121] p-2 border border-zinc-700 focus:border-[#aafcff] rounded-md outline-none w-full h-9 text-white transition-all duration-200"
@@ -161,7 +161,7 @@ const AuthForm = ({type}: {type: FormType}) => {
                     </div>
                 </>
             )}
-            <div className="relative max-w-[350px] w-2/3 lg:w-1/2">
+            <div className="relative max-w-[400px] w-full">
                 {error.email && <p className="mb-1 text-red-500 text-xs">{error.email}</p>}
                 <input name='email' type="email" value={formData.email} onChange={(e) => {setFormData({...formData, email: e.target.value})}}required 
                     className="peer bg-[#212121] p-2 border border-zinc-700 focus:border-[#aafcff] rounded-md outline-none w-full h-9 text-white transition-all duration-200"
@@ -170,7 +170,7 @@ const AuthForm = ({type}: {type: FormType}) => {
                     <span>Email*</span>
                 </label>
             </div>
-            <div className="relative max-w-[350px] w-2/3 lg:w-1/2">
+            <div className="relative max-w-[400px] w-full">
                 {error.password && <p className="mb-1 text-red-500 text-xs">{error.password}</p>}
                 <input name='password' type={show?'text':'password'} value={formData.password} onChange={(e) => {setFormData({...formData, password: e.target.value})}}required 
                     className="peer bg-[#212121] p-2 border border-zinc-700 focus:border-[#aafcff] rounded-md outline-none w-full h-9 text-white transition-all duration-200"
@@ -184,7 +184,7 @@ const AuthForm = ({type}: {type: FormType}) => {
             </div>
             {type === 'sign-up' && (
                 <>
-                    <div className="relative max-w-[350px] w-2/3 lg:w-1/2">
+                    <div className="relative max-w-[400px] w-full">
                         {error.confirm && <p className="mb-1 text-red-500 text-xs">{error.confirm}</p>}
                         <input type={show?'text':'password'}  value={formData.confirm} onChange={(e) => {setFormData({...formData, confirm: e.target.value})}}required 
                             className="peer bg-[#212121] p-2 border border-zinc-700 focus:border-[#aafcff] rounded-md outline-none w-full h-9 text-white transition-all duration-200"
@@ -197,7 +197,7 @@ const AuthForm = ({type}: {type: FormType}) => {
             )}
             {type === 'sign-up' && (
                 <>
-                    <div className="flex items-center gap-3 max-w-[350px] w-2/3 lg:w-1/2">
+                    <div className="flex items-center gap-3 max-w-[400px] w-full">
                         <div className="relative bg-blue-500 rounded-md block content-center px-3 w-auto h-9">Upload Profile pic<input className='left-0 absolute opacity-0 w-full' type='file' onChange={(e)=>{
                             const file = e.target.files?.[0];
                             if (file) {
@@ -210,7 +210,7 @@ const AuthForm = ({type}: {type: FormType}) => {
                     </div>
                 </>
             )}
-            <div className="w-2/3 max-w-[350px] lg:w-1/2">
+            <div className="max-w-[400px] w-full">
                 {type === 'sign-up' && <button type="submit" className="bg-[#29d1da] hover:bg-[#2EF6FF] hover:scale-103 p-1.5 rounded-md w-full transition-(bg) transition-(scale) duration-300 ease-in-out font-semibold text-md">{loading? <PulseLoader color="#fff"/>:'Sign-up'}</button>}
                 {type === 'sign-in' && <button type="submit" className="bg-[#29d1da] hover:bg-[#2EF6FF] hover:scale-103 p-1.5 rounded-md w-full font-semibold transition-(bg) transition-(scale) duration-300 ease-in-out text-md">{loading? <PulseLoader color="#fff"/>:'Sign-in'}</button>}
             </div>

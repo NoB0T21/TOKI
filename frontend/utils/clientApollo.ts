@@ -2,8 +2,8 @@
 export const getUserPosts = async ({userId,skip,getuserPost}:{userId:string,skip:number,getuserPost:any}) =>{
     const { data } = await getuserPost({
       variables: {
-        offset: skip*20,
-        limit: 20,
+        offset: skip*25,
+        limit: 25,
         excludeOwner: userId
       },
     })
@@ -13,8 +13,8 @@ export const getUserPosts = async ({userId,skip,getuserPost}:{userId:string,skip
 export const getUserPosts2 = async ({userId,skip,getuserPost}:{userId:string,skip:number,getuserPost:any}) =>{
     const { data } = await getuserPost({
       variables: {
-        offset: skip*10,
-        limit: 10,
+        offset: skip*20,
+        limit: 20,
         owner: userId
       },
     })

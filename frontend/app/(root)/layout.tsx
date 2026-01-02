@@ -7,7 +7,7 @@ const layout = ({children}:{children: React.ReactNode}) => {
       <div className='hidden sm:flex'><Sidebar/></div>
       <section className='flex flex-col flex-1'>
         <div className='flex-1 px-3 lg:px-10 py-2 sm:py-10 w-full max-w-[750px] overflow-hidden'>{children}</div>
-        <div className='sm:hidden z-10 flex h-[60px]'><MobileNav/></div>
+        <div className='sm:hidden z-10 flex h-[60px] absolute bottom-0 left-0 w-full mr-3'><MobileNav/></div>
       </section>
     </main>
   )

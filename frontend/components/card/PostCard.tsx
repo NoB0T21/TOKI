@@ -8,6 +8,7 @@ import Image from "next/image"
 import Readmore from "../Readmore"
 import Cookies from "js-cookie"
 import FileDropdown from "./FileDropdown"
+import Link from "next/link"
 
 const PostCard = ({file, profile, name, userID,play,followings,onSelect}:{file:Posts2, profile:string,play:boolean, name:string, userID:string, followings:string[],onSelect:(play: boolean) => void}) => {
   const user = Cookies.get('user') || '';
@@ -99,10 +100,10 @@ const PostCard = ({file, profile, name, userID,play,followings,onSelect}:{file:P
         onViewportLeave={()=>{setUrl('gg');audioRef.current?.pause()}}
         viewport={{amount: 0.8 }}
         key={file.id} 
-        className="relative bg-black my-1 sm:my-3 py-1 rounded-md w-full sm:w-full md:w-160 xl:w-full sm:max-w-[650px] snap-start"
+        className="relative bg-black my-1 sm:my-3 py-1 rounded-md w-full snap-start"
       >
           <div className="flex justify-between items-center w-full">
-            <div className="flex w-2/3 items-center sm:my-3 px-2">
+            <Link href={`/user/${file.owner}`} className="flex w-2/3 items-center sm:my-3 px-2">
               <Image
                 src={profile}
                 alt="Post"
@@ -122,7 +123,7 @@ const PostCard = ({file, profile, name, userID,play,followings,onSelect}:{file:P
                   </>
                 }
                 </div>
-            </div>
+            </Link>
 
             <div className="flex cursor-pointer text-sm justify-between items-center p-5 h-full">
                 {userID===user?

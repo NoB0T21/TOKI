@@ -109,7 +109,7 @@ const ProfileData = ({picture,posts,follower,following,followerlist,followinglis
       {showFlower && (
         <div className='top-0 left-0 z-6 absolute flex justify-center items-center gap-2 backdrop-blur-sm w-full h-full'>
           <div className='py-10 h-full'><p onClick={()=>setShowFlower(false)} className='flex justify-center items-center bg-red-500 p-1 rounded-md size-7 text-xl'>X</p></div>
-          <Followers id={id} followinglist={followerlist}/>
+          <Followers user={user} followinglist={followerlist}/>
         </div>
       )}
       {(showsory && story) && (

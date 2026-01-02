@@ -81,7 +81,7 @@ const ExploreGrid = ({post, LikeCount,Likes,Following}:Prop) => {
     <>
       <div className="relative flex flex-col sm:justify-between items-start gap-7 bg-gradient-to-t from-[rgba(5,11,15,1)] to-[rgba(14,18,23,1)] p-5 py-8 rounded-2xl w-full md:w-2/3 xl:w-350 h-[91vh] sm:h-full overflow-y-scroll">
         <div className='flex justify-between items-center mt-6 sm:mt-0 w-full h-8'>
-          <Link href={`/User/${post.user.id}`} className='flex items-center'>
+          <Link href={`/user/${post.user.id}`} className='flex items-center'>
             <Image
               src={post.user.picture}
               alt="Post"
@@ -106,7 +106,7 @@ const ExploreGrid = ({post, LikeCount,Likes,Following}:Prop) => {
           <motion.div
               whileTap={{ scale: 0.7 }}
               onClick={followuser} 
-              className="flex items-center px-2 border-1 rounded-md text-sm"
+              className="flex items-center px-2 border-1 rounded-md text-sm animated-gradient hover:animate-wiggl"
             >
               {following?.includes(userId)?'Following':'Follow'}
             </motion.div>
@@ -119,22 +119,25 @@ const ExploreGrid = ({post, LikeCount,Likes,Following}:Prop) => {
           className="rounded-md w-full h-50 sm:h-3/4 object-contain"
         />
           <div>
-            <motion.div
+            <motion.div 
               whileTap={{ scale: 0.7 }}
-              onClick={() =>likePost()} 
-              className="flex gap-3"
+              onClick={() =>likePost()}
+              className="flex gap-1 w-10 sm:w-12"
             >
-              <div className="flex gap-1"><div className={`size-6 sm:size-7`}>{like?.includes(userId)?<LikeFill/>:<Like/>}</div><p className='font-semibold'>{likecount}</p></div>
+              <div className={`size-6 sm:size-7`}>
+                {like?.includes(userId)?<LikeFill/>:<Like/>}
+              </div>
+              <p className='font-semibold'>{likecount}</p>
             </motion.div>
-            <div className='flex justify-start mx-1mt-1 p-1'>
+            <div className='flex justify-start gap-1 flex-wrap p-1 '>
               {post.tags.map((tag, index) => (
-                  <span key={index} className="flex items-center text-[#2EF6FF] hover:text-[#aafcff] text-sm hover:underline hover:underline-offset-1 cursor-pointer">
+                  <span key={index} className="truncate w-auto items-center text-[#2EF6FF] hover:text-[#aafcff] text-sm hover:underline hover:underline-offset-1 cursor-pointer">
                       {tag}
                   </span>
               ))}
             </div>
             <h1>{post.title}</h1>
-            <div className="text-[#b0bec5] break-words whitespace-pre-wrap">
+            <div className="text-[#b0bec5] break-words w-full  whitespace-pre-wrap">
                 {post.message}
             </div>
           </div>

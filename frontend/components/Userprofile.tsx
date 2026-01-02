@@ -69,8 +69,8 @@ const Userprofile = ({userId , user}:{userId:string,user:User2}) => {
   }
 
   return (
-    <>
-      {!show && 
+    <div className='h-full w-full'>
+      {!show ? 
       <>
         <ProfileData 
           id={user.id}
@@ -99,19 +99,20 @@ const Userprofile = ({userId , user}:{userId:string,user:User2}) => {
             </div>
             ))} 
           </div>
-      </>}
-      {show && 
-      <div className='py-5 w-screen h-full relative bottom-[30px]'>
-        <h1 className='top-1 z-9 sticky flex gap-3 font-bold text-2xl'>
+      </>
+    :
+      <div className='relative'>
+        <h1 className='top-0 left-0 z-100 absolute gap-3 backdrop-blur-2xl w-full p-1 px-2 flex font-bold text-xl'>
           <div onClick={()=>setShow(false)}>back</div> Posts
         </h1>
-        <div ref={containerRef} onScroll={handleScroll} className="gap-4 grid mt-5 w-full h-full overflow-y-scroll scroll-smooth snap-mandatory snap-y">
+        <div ref={containerRef} onScroll={handleScroll} className="gap-1 rounded-md px-1 scroll-smooth grid grid-cols-1 w-full bg-[#1a1e23] pb-5 h-[78vh] overflow-y-scroll snap-mandatory snap-y">
           {posts.map((f:any)=>(
             <PostCard onSelect={unwanted} key={f.id} play followings={user.follower.count} file={f} profile={user.picture} name={user.name} userID={userId}/>
           ))} 
         </div>
-      </div>}
-    </>
+      </div>
+    }
+  </div>
   )
 }
 

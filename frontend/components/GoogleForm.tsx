@@ -83,7 +83,7 @@ const GoogleForm = () => {
 
   return (
     <>
-      <div className=" max-w-[350px] w-2/3 lg:w-1/2">
+      <div className=" max-w-[400px] w-full">
         <button onClick={()=>handleGoogleLogin()} className="bg-[#29d1da] hover:bg-[#2EF6FF] hover:scale-103 p-1 rounded-md w-full transition-(scale) duration-300 ease-in-out font-semibold text-md">
           <div className="flex justify-center items-center gap-1 "><Google/>Google</div>
         </button>

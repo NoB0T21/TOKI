@@ -2,8 +2,7 @@
 
 import { getexplorepostpageintion } from "@/queries/Queries";
 import { useLazyQuery } from "@apollo/client";
-import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Cookies from "js-cookie";
 import Image from "next/image";
 import ExploreGrid from "../ExploreGrid";
@@ -17,7 +16,9 @@ const Explore = () => {
   const [getuserPost] = useLazyQuery(getexplorepostpageintion)
   const [posts,setPosts] = useState<Posts[]>([]);
   const [hasMore, setHasMore] = useState(true);
+  const scrollRef = useRef<HTMLDivElement>(null);
   const [skip, setSkip] = useState(0);
+  const [loading, setLoading] = useState(false);
   const [post, setPost] = useState<Posts>({
     id: '',
     pictureURL: '',
@@ -49,31 +50,32 @@ const Explore = () => {
   });
   
   const fetchMore = async () => {
-    if (!hasMore) return;
+  if (!hasMore || loading) return;
+  setLoading(true);
 
-    const posts = await getUserPosts({userId,skip,getuserPost})
+  const posts = await getUserPosts({ userId, skip, getuserPost });
 
-    const newPosts = posts || [];
-    if (newPosts.length < 10 ) {
-      setHasMore(false);
-    }
-    if (newPosts.length) {
-      setPosts((prev) => {
-        const merged = [...prev, ...posts];
-        const unique = Array.from(
-          new Map(merged.map((p) => [p.id, p])).values()
-        );
-        //const unique = [...new Set(merged)]
-        return unique;
-      });
-    }
+  const newPosts = posts || [];
+  if (newPosts.length < 10) setHasMore(false);
+
+  if (newPosts.length) {
+    setPosts(prev => {
+      const merged = [...prev, ...posts];
+      const unique = Array.from(new Map(merged.map(p => [p.id, p])).values());
+      return unique;
+    });
   }
+  setLoading(false);
+};
   
-  const handleScroll = (e: React.UIEvent<HTMLElement>) => {
-    const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
-    if (scrollTop + clientHeight >= scrollHeight - 100 && hasMore) {
-      setSkip(prev => prev + 1);
-    }
+  const handleScroll = () => {
+    const el = scrollRef.current;
+  if (!el) return; 
+
+  const { scrollTop, scrollHeight, clientHeight } = el;
+  if (scrollTop + clientHeight >= scrollHeight -100) {
+    setSkip(prev => prev + 1);
+  }
   };
   
   useEffect(() => {
@@ -82,7 +84,7 @@ const Explore = () => {
 
          
   return (
-    <div onScroll={handleScroll} className='gap-1 grid grid-cols-4 grid-flow-dense auto-rows-[80px] md:auto-rows-[150px] w-full h-full overflow-y-scroll'>
+    <div onScroll={handleScroll} ref={scrollRef} className='gap-1 grid grid-cols-4 grid-flow-dense auto-rows-[80px] md:auto-rows-[150px] w-full h-full overflow-y-scroll'>
       {posts.map((post,index)=>(
         <div 
           key={post.id}
@@ -101,7 +103,6 @@ const Explore = () => {
       ))}
       {post.id && 
         <div className="top-0 left-0 absolute flex justify-between gap-2 backdrop-blur-sm p-2 md:p-10 w-full h-full">
-          <ExploreGrid post={post} Likes={post.like.like} LikeCount={post.like.likeCount} Following={post.follower.count}/>
           <div 
             onClick={()=>setPost({
               id: '',
@@ -136,6 +137,7 @@ const Explore = () => {
           >
             <p>x</p>
           </div>
+          <ExploreGrid post={post} Likes={post.like.like} LikeCount={post.like.likeCount} Following={post.follower.count}/>
         </div>
       }
     </div>

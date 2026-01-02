@@ -60,7 +60,7 @@ const Following = ({user}:any) => {
         </div>
         {userId !== user.id ? 
         <div className="px-2 border-1 rounded-md" onClick={()=>followuser({CreatorId:user.id})}>{following.includes(userId)?'Following':'Follow'}</div>
-        : 'helo'}
+        : ''}
       </div>
       {showToast && <Toasts type={'successMsg'} msg={responseMsg}/>}
     </div>
