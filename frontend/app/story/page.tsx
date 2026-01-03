@@ -162,235 +162,137 @@ export default function Page() {
 };
 
   return (
-    <div className="flex p-4 w-full h-screen overflow-clip">
-      <div className='flex flex-col items-center gap-2 w-full md:w-1/2 h-full'>
-        <div
-          ref={storyRef}
-          className="relative shadow border-[#3e4a57] border-1 rounded w-[310px] md:w-90 h-132 sm:h-[85%] sm:max-h-160 overflow-hidden"
-          style={{ backgroundColor: bgColor }}
-        >
-          {elements.map((el, i) => (
-            <DraggableElement
-              key={el.id}
-              id={el.id}
-              isSelected={selectedId === el.id}
-              onClick={() => setSelectedId(el.id)}
-              zIndex={el.z ?? 1}
-              position={{ x: el.x || 0, y: el.y || 0 }}
-              size={{ width: el.width || 100, height: el.height || 100 }}
-              onDragEnd={(x, y) => updateElementPosition(el.id, x, y, setElements)}
-              onResizeEnd={(w, h) => updateElementSize(el.id, w, h, setElements)}
-            >
-              {el.type === "image" ? (
-                <div className="flex justify-center items-center w-full h-full">
-                  <img src={el.content} className="max-w-full max-h-full object-contain" />
-                </div>
-              ) : (
-                <div
-                  className="flex justify-center items-center w-full h-full text-center"
-                  style={{
-                    backgroundColor: el.bgColor,
-                    color: el.textColor,
-                    fontSize: `${el.fontSize || 16}px`,
-                  }}
-                >
-                  {el.content}
-                </div>
-              )}
-            </DraggableElement>
-          ))}
+    <div className='w-screen h-screen flex items-center justify-center scroll-smooth'>
+      <div className='w-full flex max-w-300 h-full sm:px-4 overflow-x-hidden shadow-[#2ef6ff] shadow-2xl/50 rounded-xl'>
+        <div className='flex flex-col items-center gap-2 w-full md:w-1/2 h-full'>
+          <div
+            ref={storyRef}
+            className="relative shadow border-[#3e4a57] border-1 rounded w-[310px] md:w-90 h-132 sm:h-[85%] sm:max-h-160 overflow-hidden"
+            style={{ backgroundColor: bgColor }}
+          >
+            {elements.map((el, i) => (
+              <DraggableElement
+                key={el.id}
+                id={el.id}
+                isSelected={selectedId === el.id}
+                onClick={() => setSelectedId(el.id)}
+                zIndex={el.z ?? 1}
+                position={{ x: el.x || 0, y: el.y || 0 }}
+                size={{ width: el.width || 100, height: el.height || 100 }}
+                onDragEnd={(x, y) => updateElementPosition(el.id, x, y, setElements)}
+                onResizeEnd={(w, h) => updateElementSize(el.id, w, h, setElements)}
+              >
+                {el.type === "image" ? (
+                  <div className="flex justify-center items-center w-full h-full">
+                    <img src={el.content} className="max-w-full max-h-full object-contain" />
+                  </div>
+                ) : (
+                  <div
+                    className="flex justify-center items-center w-full h-full text-center"
+                    style={{
+                      backgroundColor: el.bgColor,
+                      color: el.textColor,
+                      fontSize: `${el.fontSize || 16}px`,
+                    }}
+                  >
+                    {el.content}
+                  </div>
+                )}
+              </DraggableElement>
+            ))}
+          </div>
+          <motion.button
+            whileHover={{scale:1.1}}
+            whileTap={{scale: 0.8}}
+            onClick={()=>{setSelectedId(null);handleSubmit()}}
+            className="bg-[#03b5be] shadow px-6 py-2 rounded font-semibold text-[#ffffff]"
+          >
+            📤 Post Story
+          </motion.button>
         </div>
-        <motion.button
-          whileHover={{scale:1.1}}
-          whileTap={{scale: 0.8}}
-          onClick={()=>{setSelectedId(null);handleSubmit()}}
-          className="bg-[#03b5be] shadow px-6 py-2 rounded font-semibold text-[#ffffff]"
-        >
-          📤 Post Story
-        </motion.button>
-      </div>
 
-      <motion.div 
-        whileTap={{ scale: 0.8 }} 
-        className='sm:hidden right-1 bottom-30 z-1001 absolute bg-gradient-to-l from-[#7726b4] to-[#c85eee] p-3 rounded-md' 
-        onClick={()=>setShow(!show)}
-      >{show ?'close':'Add'}</motion.div>
+        <motion.div 
+          whileTap={{ scale: 0.8 }} 
+          className='sm:hidden right-1 bottom-30 z-1001 absolute bg-gradient-to-l from-[#7726b4] to-[#c85eee] p-3 rounded-md' 
+          onClick={()=>setShow(!show)}
+        >{show ?'close':'Add'}</motion.div>
 
 
-      
-      <AnimatePresence mode='popLayout'>
         
-        {show && 
-          <motion.div
-            key={1}
-            initial={{x: -300}}
-            animate={{x: 25}}
-            exit={{x: -300}}
-            className='sm:hidden block top-0 left-0 z-1000 absolute bg-[#1a1e23] p-5 border-[#3e4a57] border-1 rounded-2xl w-[86%] h-full overflow-y-auto'
-          >
-            <MusicSelect reg={15} onSelect={handleTrackSelect}/>
-            {Track && <div className='text-sm'>
-              <div className='flex gap-2'>
-                song: {Track.title} by {Track.artist} 
-                <div className='drop-shadow-blue-400/80 drop-shadow-xl fill-indigo-500'><ScaleLoader margin={1} height={20} width={3} radius={50} color='#2EF6FF' speedMultiplier={1.5}/></div>
-              </div>
-              <div className='bg-red-500 mb-3 px-2 py-1 rounded-md w-16' onClick={()=>setTrack(undefined)}>remove</div>
-            </div>}
-            <div className="space-y-3">
-              <input
-                type="text"
-                value={text}
-                onChange={(e) => setText(e.target.value)}
-                placeholder="Enter your story text"
-                className="shadow-[#2ef5ff9b] shadow-2xl px-4 py-2 border-[#3e4a57] border-1 focus:border-[#2EF6FF] rounded-md outline-none w-full"
-              />
-
-              <div className="flex flex-wrap gap-2">
-                <motion.button
-                  whileTap={{scale:0.8}}
-                  onClick={handleAddText}
-                  className="bg-[#3e4a57] shadow-[#2ef5ff9b] shadow-2xl px-4 py-1 rounded text-white"
-                >
-                  ➕ Add Text
-                </motion.button>
-
-                <motion.button
-                  whileTap={{scale:0.8}}
-                  onClick={triggerImageUpload}
-                  className="bg-[#3e4a57] shadow-[#2ef5ff9b] shadow-2xl px-4 py-1 rounded"
-                >
-                  📷 Add Image
-                </motion.button>
-
+        <AnimatePresence mode='popLayout'>
+          
+          {show && 
+            <motion.div
+              key={1}
+              initial={{x: -300}}
+              animate={{x: 25}}
+              exit={{x: -300}}
+              className='sm:hidden block top-0 left-0 z-1000 absolute bg-[#1a1e23] p-5 border-[#3e4a57] border-1 rounded-2xl w-[86%] h-full overflow-y-auto'
+            >
+              <MusicSelect reg={15} onSelect={handleTrackSelect}/>
+              {Track && <div className='text-sm'>
+                <div className='flex gap-2'>
+                  song: {Track.title} by {Track.artist} 
+                  <div className='drop-shadow-blue-400/80 drop-shadow-xl fill-indigo-500'><ScaleLoader margin={1} height={20} width={3} radius={50} color='#2EF6FF' speedMultiplier={1.5}/></div>
+                </div>
+                <div className='bg-red-500 mb-3 px-2 py-1 rounded-md w-16' onClick={()=>setTrack(undefined)}>remove</div>
+              </div>}
+              <div className="space-y-3">
                 <input
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  hidden
-                  ref={imageInputRef}
-                  onChange={handleImageSelect}
+                  type="text"
+                  value={text}
+                  onChange={(e) => setText(e.target.value)}
+                  placeholder="Enter your story text"
+                  className="shadow-[#2ef5ff9b] shadow-2xl px-4 py-2 border-[#3e4a57] border-1 focus:border-[#2EF6FF] rounded-md outline-none w-full"
                 />
-              </div>
 
-              <div className="flex flex-col items-center gap-2">
-                <div>
-                  {stickers.map((emoji, i) => (
-                    <button
-                      key={emoji+i}
-                      onClick={() => handleAddSticker(emoji)}
-                      className="text-2xl hover:scale-110 transition"
-                    >
-                      {emoji}
-                    </button>
-                  ))}
+                <div className="flex flex-wrap gap-2">
+                  <motion.button
+                    whileTap={{scale:0.8}}
+                    onClick={handleAddText}
+                    className="bg-[#3e4a57] shadow-[#2ef5ff9b] shadow-2xl px-4 py-1 rounded text-white"
+                  >
+                    ➕ Add Text
+                  </motion.button>
+
+                  <motion.button
+                    whileTap={{scale:0.8}}
+                    onClick={triggerImageUpload}
+                    className="bg-[#3e4a57] shadow-[#2ef5ff9b] shadow-2xl px-4 py-1 rounded"
+                  >
+                    📷 Add Image
+                  </motion.button>
+
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    hidden
+                    ref={imageInputRef}
+                    onChange={handleImageSelect}
+                  />
                 </div>
 
-                <div className="flex flex-col gap-2 mb-40 w-50 h-20">
-                  <p className="font-semibold text-[#b0bec5] text-sm">background Color</p>
-                  <div className="chrome-picker">
-                    <ChromePicker
-                      color={bgColor || '#fff'}
-                      onChange={(color) =>
-                        setBgColor(`rgba(${color.rgb.r}, ${color.rgb.g}, ${color.rgb.b}, ${color.rgb.a})`)
-                      }
-                      styles={{
-                        default: {
-                          picker: {
-                            borderRadius: '18px',
-                            boxShadow: 'none',
-                            width: '100%',
-                            background: '#1a1e23',
-                            color: 'white',
-                          },
-                        },
-                      }}
-                    />
+                <div className="flex flex-col items-center gap-2">
+                  <div>
+                    {stickers.map((emoji, i) => (
+                      <button
+                        key={emoji+i}
+                        onClick={() => handleAddSticker(emoji)}
+                        className="text-2xl hover:scale-110 transition"
+                      >
+                        {emoji}
+                      </button>
+                    ))}
                   </div>
-                </div>
-                
-                {selectedElement && selectedElement.type !== 'image' && (
-                  <div className="gap-4 grid grid-cols-1">
-                    <div className="flex items-center gap-2">
-                      <span>Size</span>
-                      <motion.button
-                        whileHover={{scale:1.06}}
-                        whileTap={{scale:0.8}}
-                        onClick={() => changeFontSize(-1)}
-                        className="bg-[#3e4a57] px-2 rounded"
-                      >-</motion.button>
-                      <input
-                        type="number"
-                        value={selectedElement.fontSize}
-                        onChange={(e) => updateSelectedElement({fontSize:e.target.valueAsNumber})}
-                        placeholder="Enter your story text"
-                        className="px-2 py-1 border-[#3e4a57] border-1 rounded w-15"
-                      />
-                      <span>px</span>
-                      <motion.button
-                        whileHover={{scale:1.06}}
-                        whileTap={{scale:0.8}}
-                        onClick={() => changeFontSize(1)} 
-                        className="bg-[#3e4a57] px-2 rounded"
-                      >+</motion.button>
-                    </div>
 
-                    <div className="flex items-center gap-2">
-                      <span>Z-index</span>
-                      <motion.button
-                        whileHover={{scale:1.06}}
-                        whileTap={{scale:0.8}}
-                        onClick={() => changeZ(-1)}
-                        className="bg-[#3e4a57] px-2 rounded"
-                      >-</motion.button>
-                      <input
-                        type="number"
-                        value={selectedElement.z}
-                        onChange={(e) => updateSelectedElement({z:e.target.valueAsNumber})}
-                        placeholder="Enter your story text"
-                        className="px-2 py-1 border-[#3e4a57] border-1 rounded w-15"
-                      />
-                      <motion.button
-                        whileHover={{scale:1.06}}
-                        whileTap={{scale:0.8}}
-                        onClick={() => changeZ(1)} 
-                        className="bg-[#3e4a57] px-2 rounded"
-                      >+</motion.button>
-                    </div>
-                  </div>
-                )}
-
-                {selectedElement?.type === 'text' && (
-                  <div className="gap-4 grid grid-cols-2">
-                    <div className='w-full h-full'>
-                      <p className="font-semibold text-[#b0bec5] text-sm">Text Color</p>
-                      <div className="chrome-picker">
-                        <ChromePicker
-                          color={selectedElement.textColor || '#fff'}
-                          onChange={(color) =>
-                            updateSelectedElement({ textColor: `rgba(${color.rgb.r}, ${color.rgb.g}, ${color.rgb.b}, ${color.rgb.a})` })
-                          }
-                          styles={{
-                            default: {
-                              picker: {
-                                borderRadius: '18px',
-                                boxShadow: 'none',
-                                width: '100%',
-                                background: '#1a1e23',
-                                color: 'white',
-                              },
-                            },
-                          }}
-                        />
-                      </div>
-                    </div>
-
-                    <div className='w-full h-full'>
-                      <p className="font-semibold text-[#b0bec5] text-sm">Background</p>
-                      <div className="chrome-picker">
-                        <ChromePicker
-                        color={selectedElement.bgColor || 'rgba(0,0,0,0.5)'}
+                  <div className="flex flex-col gap-2 mb-40 w-50 h-20">
+                    <p className="font-semibold text-[#b0bec5] text-sm">background Color</p>
+                    <div className="chrome-picker">
+                      <ChromePicker
+                        color={bgColor || '#fff'}
                         onChange={(color) =>
-                          updateSelectedElement({ bgColor: `rgba(${color.rgb.r}, ${color.rgb.g}, ${color.rgb.b}, ${color.rgb.a})` })
+                          setBgColor(`rgba(${color.rgb.r}, ${color.rgb.g}, ${color.rgb.b}, ${color.rgb.a})`)
                         }
                         styles={{
                           default: {
@@ -404,172 +306,92 @@ export default function Page() {
                           },
                         }}
                       />
+                    </div>
+                  </div>
+                  
+                  {selectedElement && selectedElement.type !== 'image' && (
+                    <div className="gap-4 grid grid-cols-1">
+                      <div className="flex items-center gap-2">
+                        <span>Size</span>
+                        <motion.button
+                          whileHover={{scale:1.06}}
+                          whileTap={{scale:0.8}}
+                          onClick={() => changeFontSize(-1)}
+                          className="bg-[#3e4a57] px-2 rounded"
+                        >-</motion.button>
+                        <input
+                          type="number"
+                          value={selectedElement.fontSize}
+                          onChange={(e) => updateSelectedElement({fontSize:e.target.valueAsNumber})}
+                          placeholder="Enter your story text"
+                          className="px-2 py-1 border-[#3e4a57] border-1 rounded w-15"
+                        />
+                        <span>px</span>
+                        <motion.button
+                          whileHover={{scale:1.06}}
+                          whileTap={{scale:0.8}}
+                          onClick={() => changeFontSize(1)} 
+                          className="bg-[#3e4a57] px-2 rounded"
+                        >+</motion.button>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <span>Z-index</span>
+                        <motion.button
+                          whileHover={{scale:1.06}}
+                          whileTap={{scale:0.8}}
+                          onClick={() => changeZ(-1)}
+                          className="bg-[#3e4a57] px-2 rounded"
+                        >-</motion.button>
+                        <input
+                          type="number"
+                          value={selectedElement.z}
+                          onChange={(e) => updateSelectedElement({z:e.target.valueAsNumber})}
+                          placeholder="Enter your story text"
+                          className="px-2 py-1 border-[#3e4a57] border-1 rounded w-15"
+                        />
+                        <motion.button
+                          whileHover={{scale:1.06}}
+                          whileTap={{scale:0.8}}
+                          onClick={() => changeZ(1)} 
+                          className="bg-[#3e4a57] px-2 rounded"
+                        >+</motion.button>
                       </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
-                {selectedId && (
-                  <motion.button
-                    whileTap={{scale:0.8}}
-                    onClick={() => setElements(e => e.filter(el => el.id !== selectedId))}
-                    className='bg-red-600 px-3 py-1 rounded-md w-25 font-semibold text-center'
-                  >
-                    🗑️ Delete
-                  </motion.button>
-                )}
-              </div>
-            </div>
-          </motion.div>
-        }
-          <motion.div
-            key={2}
-            initial={{x: -300}}
-            animate={{x: 25}}
-            exit={{x: -300}}
-            className='hidden sm:block p-5 w-1/2 h-full overflow-y-auto'
-          >
-            <MusicSelect reg={15} onSelect={handleTrackSelect}/>
-            {Track && <div className='text-sm'>
-              <div className='flex gap-2'>
-                song: {Track.title} by {Track.artist} 
-                <div className='drop-shadow-blue-400/80 drop-shadow-xl fill-indigo-500'><ScaleLoader margin={1} height={20} width={3} radius={50} color='#2EF6FF' speedMultiplier={1.5}/></div>
-              </div>
-              <div className='bg-red-500 mb-3 px-2 py-1 rounded-md w-16' onClick={()=>setTrack(undefined)}>remove</div>
-            </div>}
-            <div className="space-y-3">
-              <input
-                type="text"
-                value={text}
-                onChange={(e) => setText(e.target.value)}
-                placeholder="Enter your story text"
-                className="shadow-[#2ef5ff89] shadow-2xl px-4 py-2 border-[#3e4a57] border-1 focus:border-[#2EF6FF] rounded-md outline-none w-full"
-              />
+                  {selectedElement?.type === 'text' && (
+                    <div className="gap-4 grid grid-cols-2">
+                      <div className='w-full h-full'>
+                        <p className="font-semibold text-[#b0bec5] text-sm">Text Color</p>
+                        <div className="chrome-picker">
+                          <ChromePicker
+                            color={selectedElement.textColor || '#fff'}
+                            onChange={(color) =>
+                              updateSelectedElement({ textColor: `rgba(${color.rgb.r}, ${color.rgb.g}, ${color.rgb.b}, ${color.rgb.a})` })
+                            }
+                            styles={{
+                              default: {
+                                picker: {
+                                  borderRadius: '18px',
+                                  boxShadow: 'none',
+                                  width: '100%',
+                                  background: '#1a1e23',
+                                  color: 'white',
+                                },
+                              },
+                            }}
+                          />
+                        </div>
+                      </div>
 
-              <div className="flex flex-wrap gap-2">
-                <motion.button
-                  whileHover={{scale:1.07}}
-                  whileTap={{scale:0.8}}
-                  onClick={handleAddText}
-                  className="bg-[#3e4a57] shadow-[#2ef5ffaa] shadow-2xl px-4 py-1 rounded text-white"
-                >
-                  ➕ Add Text
-                </motion.button>
-
-                <motion.button
-                  whileHover={{scale:1.07}}
-                  whileTap={{scale:0.8}}
-                  onClick={triggerImageUpload}
-                  className="bg-[#3e4a57] shadow-[#2ef5ff9b] shadow-2xl px-4 py-1 rounded"
-                >
-                  📷 Add Image
-                </motion.button>
-
-                <input
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  hidden
-                  ref={imageInputRef}
-                  onChange={handleImageSelect}
-                />
-              </div>
-
-              <div className="flex flex-col gap-2">
-                <div>
-                  {stickers.map((emoji, i) => (
-                    <button
-                      key={i}
-                      onClick={() => handleAddSticker(emoji)}
-                      className="text-2xl hover:scale-110 transition"
-                    >
-                      {emoji}
-                    </button>
-                  ))}
-                </div>
-
-                <div className="flex flex-col gap-2 mb-40 w-50 h-30">
-                  <p className="font-semibold text-[#b0bec5] text-sm">background Color</p>
-                  <div className="chrome-picker">
-                    <ChromePicker
-                      color={bgColor || '#fff'}
-                      onChange={(color) =>
-                        setBgColor(`rgba(${color.rgb.r}, ${color.rgb.g}, ${color.rgb.b}, ${color.rgb.a})`)
-                      }
-                      styles={{
-                        default: {
-                          picker: {
-                            borderRadius: '18px',
-                            boxShadow: 'none',
-                            width: '100%',
-                            background: '#1a1e23',
-                            color: 'white',
-                          },
-                        },
-                      }}
-                      />
-                  </div>
-                </div>
-
-                {selectedElement && selectedElement.type !== 'image' && (
-                  <div className="gap-2 grid grid-cols-2">
-                    <div className="flex items-center gap-2">
-                      <motion.button
-                        whileHover={{scale:1.06}}
-                        whileTap={{scale:0.8}}
-                        onClick={() => changeFontSize(-1)}
-                        className="bg-[#3e4a57] px-2 rounded"
-                      >-</motion.button>
-                      <input
-                        type="number"
-                        value={selectedElement.fontSize}
-                        onChange={(e) => updateSelectedElement({fontSize:e.target.valueAsNumber})}
-                        placeholder="Enter your story text"
-                        className="px-2 py-1 border-[#3e4a57] border-1 rounded w-15"
-                      />
-                      <span>px</span>
-                      <motion.button
-                        whileHover={{scale:1.06}}
-                        whileTap={{scale:0.8}}
-                        onClick={() => changeFontSize(1)} 
-                        className="bg-[#3e4a57] px-2 rounded"
-                      >+</motion.button>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <span>Z-index: </span>
-                      <motion.button
-                        whileHover={{scale:1.06}}
-                        whileTap={{scale:0.8}}
-                        onClick={() => changeZ(-1)}
-                        className="bg-[#3e4a57] px-2 rounded"
-                      >-</motion.button>
-                      <input
-                        type="number"
-                        value={selectedElement.z}
-                        onChange={(e) => updateSelectedElement({z:e.target.valueAsNumber})}
-                        placeholder="Enter your story text"
-                        className="px-2 py-1 border-[#3e4a57] border-1 rounded w-15"
-                      />
-                      <motion.button
-                        whileHover={{scale:1.06}}
-                        whileTap={{scale:0.8}}
-                        onClick={() => changeZ(1)} 
-                        className="bg-[#3e4a57] px-2 rounded"
-                      >+</motion.button>
-                    </div>
-                  </div>
-                )}
-
-                {selectedElement?.type === 'text' && (
-                  <div className="gap-4 grid grid-cols-2 mt-5">
-                    <div className='w-full h-full'>
-                      <p className="font-semibold text-[#b0bec5] text-sm">Text Color</p>
-                      <div className="chrome-picker">
-                        <ChromePicker
-                          color={selectedElement.textColor || '#fff'}
+                      <div className='w-full h-full'>
+                        <p className="font-semibold text-[#b0bec5] text-sm">Background</p>
+                        <div className="chrome-picker">
+                          <ChromePicker
+                          color={selectedElement.bgColor || 'rgba(0,0,0,0.5)'}
                           onChange={(color) =>
-                            updateSelectedElement({ textColor: `rgba(${color.rgb.r}, ${color.rgb.g}, ${color.rgb.b}, ${color.rgb.a})` })
+                            updateSelectedElement({ bgColor: `rgba(${color.rgb.r}, ${color.rgb.g}, ${color.rgb.b}, ${color.rgb.a})` })
                           }
                           styles={{
                             default: {
@@ -583,16 +405,97 @@ export default function Page() {
                             },
                           }}
                         />
+                        </div>
                       </div>
                     </div>
+                  )}
 
-                    <div className='w-full h-full'>
-                      <p className="font-semibold text-[#b0bec5] text-sm">Background</p>
-                      <div className="chrome-picker">
-                        <ChromePicker
-                        color={selectedElement.bgColor || 'rgba(0,0,0,0.5)'}
+                  {selectedId && (
+                    <motion.button
+                      whileTap={{scale:0.8}}
+                      onClick={() => setElements(e => e.filter(el => el.id !== selectedId))}
+                      className='bg-red-600 px-3 py-1 rounded-md w-25 font-semibold text-center'
+                    >
+                      🗑️ Delete
+                    </motion.button>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          }
+            <motion.div
+              key={2}
+              initial={{x: -300}}
+              animate={{x: 25}}
+              exit={{x: -300}}
+              className='hidden sm:block p-5 w-1/2 h-full overflow-y-auto'
+            >
+              <MusicSelect reg={15} onSelect={handleTrackSelect}/>
+              {Track && <div className='text-sm'>
+                <div className='flex gap-2'>
+                  song: {Track.title} by {Track.artist} 
+                  <div className='drop-shadow-blue-400/80 drop-shadow-xl fill-indigo-500'><ScaleLoader margin={1} height={20} width={3} radius={50} color='#2EF6FF' speedMultiplier={1.5}/></div>
+                </div>
+                <div className='bg-red-500 mb-3 px-2 py-1 rounded-md w-16' onClick={()=>setTrack(undefined)}>remove</div>
+              </div>}
+              <div className="space-y-3">
+                <input
+                  type="text"
+                  value={text}
+                  onChange={(e) => setText(e.target.value)}
+                  placeholder="Enter your story text"
+                  className="shadow-[#2ef5ff89] shadow-2xl px-4 py-2 border-[#3e4a57] border-1 focus:border-[#2EF6FF] rounded-md outline-none w-full"
+                />
+
+                <div className="flex flex-wrap gap-2">
+                  <motion.button
+                    whileHover={{scale:1.07}}
+                    whileTap={{scale:0.8}}
+                    onClick={handleAddText}
+                    className="bg-[#3e4a57] shadow-[#2ef5ffaa] shadow-2xl px-4 py-1 rounded text-white"
+                  >
+                    ➕ Add Text
+                  </motion.button>
+
+                  <motion.button
+                    whileHover={{scale:1.07}}
+                    whileTap={{scale:0.8}}
+                    onClick={triggerImageUpload}
+                    className="bg-[#3e4a57] shadow-[#2ef5ff9b] shadow-2xl px-4 py-1 rounded"
+                  >
+                    📷 Add Image
+                  </motion.button>
+
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    hidden
+                    ref={imageInputRef}
+                    onChange={handleImageSelect}
+                  />
+                </div>
+
+                <div className="flex flex-col gap-2">
+                  <div>
+                    {stickers.map((emoji, i) => (
+                      <button
+                        key={i}
+                        onClick={() => handleAddSticker(emoji)}
+                        className="text-2xl hover:scale-110 transition"
+                      >
+                        {emoji}
+                      </button>
+                    ))}
+                  </div>
+
+                  <div className="flex flex-col gap-2 mb-40 w-50 h-30">
+                    <p className="font-semibold text-[#b0bec5] text-sm">background Color</p>
+                    <div className="chrome-picker">
+                      <ChromePicker
+                        color={bgColor || '#fff'}
                         onChange={(color) =>
-                          updateSelectedElement({ bgColor: `rgba(${color.rgb.r}, ${color.rgb.g}, ${color.rgb.b}, ${color.rgb.a})` })
+                          setBgColor(`rgba(${color.rgb.r}, ${color.rgb.g}, ${color.rgb.b}, ${color.rgb.a})`)
                         }
                         styles={{
                           default: {
@@ -605,27 +508,126 @@ export default function Page() {
                             },
                           },
                         }}
-                      />
-                      </div>
+                        />
                     </div>
                   </div>
-                )}
 
-                {selectedId && (
-                  <motion.button
-                    whileHover={{scale:1.06}}
-                    whileTap={{scale:0.8}}
-                    onClick={() => setElements(e => e.filter(el => el.id !== selectedId))}
-                    className='bg-red-600 px-3 py-1 rounded-md w-25 font-semibold text-center'
-                  >
-                    🗑️ Delete
-                  </motion.button>
-                )}
+                  {selectedElement && selectedElement.type !== 'image' && (
+                    <div className="gap-2 grid grid-cols-2">
+                      <div className="flex items-center gap-2">
+                        <motion.button
+                          whileHover={{scale:1.06}}
+                          whileTap={{scale:0.8}}
+                          onClick={() => changeFontSize(-1)}
+                          className="bg-[#3e4a57] px-2 rounded"
+                        >-</motion.button>
+                        <input
+                          type="number"
+                          value={selectedElement.fontSize}
+                          onChange={(e) => updateSelectedElement({fontSize:e.target.valueAsNumber})}
+                          placeholder="Enter your story text"
+                          className="px-2 py-1 border-[#3e4a57] border-1 rounded w-15"
+                        />
+                        <span>px</span>
+                        <motion.button
+                          whileHover={{scale:1.06}}
+                          whileTap={{scale:0.8}}
+                          onClick={() => changeFontSize(1)} 
+                          className="bg-[#3e4a57] px-2 rounded"
+                        >+</motion.button>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <span>Z-index: </span>
+                        <motion.button
+                          whileHover={{scale:1.06}}
+                          whileTap={{scale:0.8}}
+                          onClick={() => changeZ(-1)}
+                          className="bg-[#3e4a57] px-2 rounded"
+                        >-</motion.button>
+                        <input
+                          type="number"
+                          value={selectedElement.z}
+                          onChange={(e) => updateSelectedElement({z:e.target.valueAsNumber})}
+                          placeholder="Enter your story text"
+                          className="px-2 py-1 border-[#3e4a57] border-1 rounded w-15"
+                        />
+                        <motion.button
+                          whileHover={{scale:1.06}}
+                          whileTap={{scale:0.8}}
+                          onClick={() => changeZ(1)} 
+                          className="bg-[#3e4a57] px-2 rounded"
+                        >+</motion.button>
+                      </div>
+                    </div>
+                  )}
+
+                  {selectedElement?.type === 'text' && (
+                    <div className="gap-4 grid grid-cols-2 mt-5">
+                      <div className='w-full h-full'>
+                        <p className="font-semibold text-[#b0bec5] text-sm">Text Color</p>
+                        <div className="chrome-picker">
+                          <ChromePicker
+                            color={selectedElement.textColor || '#fff'}
+                            onChange={(color) =>
+                              updateSelectedElement({ textColor: `rgba(${color.rgb.r}, ${color.rgb.g}, ${color.rgb.b}, ${color.rgb.a})` })
+                            }
+                            styles={{
+                              default: {
+                                picker: {
+                                  borderRadius: '18px',
+                                  boxShadow: 'none',
+                                  width: '100%',
+                                  background: '#1a1e23',
+                                  color: 'white',
+                                },
+                              },
+                            }}
+                          />
+                        </div>
+                      </div>
+
+                      <div className='w-full h-full'>
+                        <p className="font-semibold text-[#b0bec5] text-sm">Background</p>
+                        <div className="chrome-picker">
+                          <ChromePicker
+                          color={selectedElement.bgColor || 'rgba(0,0,0,0.5)'}
+                          onChange={(color) =>
+                            updateSelectedElement({ bgColor: `rgba(${color.rgb.r}, ${color.rgb.g}, ${color.rgb.b}, ${color.rgb.a})` })
+                          }
+                          styles={{
+                            default: {
+                              picker: {
+                                borderRadius: '18px',
+                                boxShadow: 'none',
+                                width: '100%',
+                                background: '#1a1e23',
+                                color: 'white',
+                              },
+                            },
+                          }}
+                        />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {selectedId && (
+                    <motion.button
+                      whileHover={{scale:1.06}}
+                      whileTap={{scale:0.8}}
+                      onClick={() => setElements(e => e.filter(el => el.id !== selectedId))}
+                      className='bg-red-600 px-3 py-1 rounded-md w-25 font-semibold text-center'
+                    >
+                      🗑️ Delete
+                    </motion.button>
+                  )}
+                </div>
               </div>
-            </div>
-          </motion.div>
-      </AnimatePresence>
-      
+            </motion.div>
+        </AnimatePresence>
+        
+      </div>
     </div>
   )
 }

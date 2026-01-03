@@ -59,7 +59,7 @@ const Home = ({ids}:{ids:string[]}) => {
   }, [currentIndex])
   
   return (
-    <div ref={containerRef} onScroll={handleScroll} className='gap-1 rounded-md px-2 scroll-smooth grid grid-cols-1 w-full bg-[#1a1e23] pb-5 h-[78vh] overflow-y-scroll snap-mandatory snap-y'>
+    <div ref={containerRef} onScroll={handleScroll} className='gap-1 rounded-md px-2 scroll-smooth grid grid-cols-1 w-full bg-[#1a1e23] pb-5 h-[77%] sm:h-[78vh] overflow-y-scroll snap-mandatory snap-y'>
       {posts.length > 0 ? 
         posts.map((post:Posts2)=>(
           <PostCard onSelect={handlepaly} key={post.id} play={play} followings={post.follower.count} file={post} profile={post.user.picture} name={post.user.name} userID={post.user.id}/>

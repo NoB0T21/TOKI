@@ -84,26 +84,26 @@ const Userprofile = ({userId , user}:{userId:string,user:User2}) => {
         <div className='top-12 z-3 sticky'>
           <ProfileNav/>
         </div>
-        <div onScroll={handleScroll} className="gap-1 grid grid-cols-3 md:grid-cols-4 mt-5 w-full h-2/3 overflow-y-scroll">
+        <div onScroll={handleScroll} className="gap-1 grid grid-cols-3 md:grid-cols-4 mt-5 w-full h-[80%] overflow-y-scroll">
           {posts.map((f:any)=>(
-            <div key={f.id} onClick={()=>{setShow(true);setPostId(f.id)}} className="rounded-md w-full h-30 sm:h-70 overflow-hidden">
-            <div className="w-full h-full">
-              <Image
-                src={f.pictureURL}
-                alt="Post"
-                width={1920}
-                height={1080}
-                className="bg-black rounded-md w-full h-full object-cover"
-              />
+            <div key={f.id} onClick={()=>{setShow(true);setPostId(f.id)}} className="rounded-md h-50 overflow-hidden">
+              <div className="w-full h-full">
+                <Image
+                  src={f.pictureURL}
+                  alt="Post"
+                  width={1920}
+                  height={1080}
+                  className="bg-black rounded-md w-full h-full object-cover"
+                />
               </div>
             </div>
             ))} 
           </div>
       </>
     :
-      <div className='relative'>
-        <h1 className='top-0 left-0 z-100 absolute gap-3 backdrop-blur-2xl w-full p-1 px-2 flex font-bold text-xl'>
-          <div onClick={()=>setShow(false)}>back</div> Posts
+      <div>
+        <h1 className='gap-3 backdrop-blur-2xl w-full p-1 px-2 flex font-bold text-xl'>
+          <div onClick={()=>setShow(false)}>←</div> Posts
         </h1>
         <div ref={containerRef} onScroll={handleScroll} className="gap-1 rounded-md px-1 scroll-smooth grid grid-cols-1 w-full bg-[#1a1e23] pb-5 h-[78vh] overflow-y-scroll snap-mandatory snap-y">
           {posts.map((f:any)=>(

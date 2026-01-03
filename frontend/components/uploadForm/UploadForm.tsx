@@ -281,7 +281,7 @@ useEffect(() => {
                     {PostUploadPage.page1 === pages && 
                         <div className="flex flex-col gap-3">
                             {error.files && <p className="mb-1 text-red-500 text-xs">{error.files}</p>}
-                            <div className="relative bg-zinc-700 p-2 rounded-md w-auto h-10">
+                            <div className="relative bg-zinc-700 p-2 rounded-md w-auto max-w-60 h-10">
                                 Upload youe post
                                 <input 
                                     className='left-0 absolute opacity-0 w-full' 

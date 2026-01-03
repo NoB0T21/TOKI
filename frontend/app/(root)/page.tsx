@@ -9,7 +9,7 @@ const page = async () => {
   const usersFollowing = await getuserfollowing()
 
   return (
-    <div className='w-full h-full'>
+    <div className='w-full space-y-3 h-full'>
       <DashboardHeader/>
       <StoryBar ids={usersFollowing}/>
       <ApolloWrapper>

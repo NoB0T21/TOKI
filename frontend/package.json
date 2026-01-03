@@ -19,11 +19,11 @@
     "html-to-image": "^1.11.13",
     "js-cookie": "^3.0.5",
     "motion": "^12.23.0",
-    "next": "15.3.5",
+    "next": "^16.1.1",
     "re-resizable": "^6.11.2",
-    "react": "^19.1.0",
+    "react": "^19.2.3",
     "react-color": "^2.19.3",
-    "react-dom": "^19.1.0",
+    "react-dom": "^19.2.3",
     "react-spinners": "^0.17.0",
     "wavesurfer.js": "^7.10.1",
     "zod": "^3.25.74",
@@ -38,7 +38,7 @@
     "@types/react-color": "^3.0.13",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "15.3.5",
+    "eslint-config-next": "^16.1.1",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

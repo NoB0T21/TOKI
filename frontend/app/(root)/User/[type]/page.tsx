@@ -14,7 +14,7 @@ const page = async  ({ params }: Props) => {
   const getUsers = await getUser({userId})
 
   return (
-    <main className='relative w-full h-full'>
+    <main className='w-full h-full'>
       <ProfileHeader name={getUsers.user.name}/>
       <div className='bg-[#1a1e23] p-3 rounded-lg'>
         <ApolloWrapper>

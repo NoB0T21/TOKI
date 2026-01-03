@@ -117,7 +117,7 @@ const PostCard = ({file, profile, name, userID,play,followings,onSelect}:{file:P
                   <>
                     {file.song.previewUrl&&<audio autoPlay ref={audioRef} src={`${url}`}/>}
                     <div className='flex gap-1 text-xs md:text-sm items-center'>
-                        <p className='size-5 sm:size-6 animate-spin'><Music/></p>
+                        <p className='flex size-5 sm:size-6 animate-spin'><Music/></p>
                         <p>{file.song.title} - {file.song.artist}</p>
                       </div>
                   </>
@@ -179,7 +179,8 @@ const PostCard = ({file, profile, name, userID,play,followings,onSelect}:{file:P
               </span>
             ))}
           </div>
-            <Readmore text={file.message} maxLength={30} />
+          <div className='text-lg'>{file.title}</div>
+          <Readmore text={file.message} maxLength={30} />
         </div>
       </motion.div>
       {show && 

@@ -79,7 +79,7 @@ const ExploreGrid = ({post, LikeCount,Likes,Following}:Prop) => {
 
   return (
     <>
-      <div className="relative flex flex-col sm:justify-between items-start gap-7 bg-gradient-to-t from-[rgba(5,11,15,1)] to-[rgba(14,18,23,1)] p-5 py-8 rounded-2xl w-full md:w-2/3 xl:w-350 h-[91vh] sm:h-full overflow-y-scroll">
+      <div className="relative flex flex-col items-start gap-7 bg-gradient-to-t from-[rgba(5,11,15,1)] to-[rgba(14,18,23,1)] p-5 py-8 rounded-2xl w-full sm:h-[80%] max-h-130 overflow-y-auto">
         <div className='flex justify-between items-center mt-6 sm:mt-0 w-full h-8'>
           <Link href={`/user/${post.user.id}`} className='flex items-center'>
             <Image
@@ -95,7 +95,7 @@ const ExploreGrid = ({post, LikeCount,Likes,Following}:Prop) => {
                 <>
                   {post.song.previewUrl&&<audio autoPlay ref={audioRef} src={`${post.song.previewUrl}`}/>}
                   <div className='flex gap-1 items-center'>
-                      <p className='size-6 animate-spin'><Music/></p>
+                      <p className='flex size-6 animate-spin'><Music/></p>
                       {post.song.title} - 
                       <p className='text-sm'>{post.song.artist}</p>
                     </div>
@@ -116,7 +116,7 @@ const ExploreGrid = ({post, LikeCount,Likes,Following}:Prop) => {
           alt="Post"
           width={1920}
           height={1080}
-          className="rounded-md w-full h-50 sm:h-3/4 object-contain"
+          className="rounded-md w-full aspect-video object-cover"
         />
           <div>
             <motion.div 

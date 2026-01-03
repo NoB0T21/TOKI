@@ -23,7 +23,7 @@ const MockPostcard = ({tags,message, name, pictureURL,song}:{tags?:string[],mess
                         alt="Post"
                         width={500}
                         height={500}
-                        className="rounded-full size-[30px] sm:size-10 xl:size-12 object-cover"
+                        className="rounded-full size-[22px] sm:size-10 xl:size-12 object-cover"
                     />
                         <div className="flex flex-col text-sm md:text-md justify-center px-2">
                         <div className="truncate px-2">{user?.name}</div>
