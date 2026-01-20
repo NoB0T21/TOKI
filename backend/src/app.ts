@@ -30,7 +30,6 @@ app.use('/data',middleware,graphqlHTTP({schema,graphiql:true}))
 app.use('/gg',graphqlHTTP({schema,graphiql:true}));
 
 app.get('/',(req: Request,res: Response)=>{
-    database();
     res.status(200).json({
         message: "hello",
         success: true
