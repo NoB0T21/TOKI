@@ -5,8 +5,8 @@
   "main": "server.js",
   "scripts": {
     "build": "tsc",
-    "start": "nodemon",
-    "dev": "node ./dist/server.js"
+    "dev": "nodemon",
+    "start": "node ./dist/server.js"
   },
   "author": "Aryan Gawade (NoB0T)",
   "license": "ISC",
