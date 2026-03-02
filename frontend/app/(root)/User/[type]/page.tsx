@@ -1,25 +1,20 @@
+'use client'
 import Userprofile from '@/components/Userprofile'
-import { ApolloWrapper } from '@/context/ApolloClientProvider'
-import { ProfileHeader } from '@/components/navigation/Header'
-import { getUser } from '@/utils/apolloclient'
+import { useParams } from "next/navigation";
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { useState } from 'react';
 
-type Props = {
-  params: {
-    type: string
-  }
-}
-
-const page = async  ({ params }: Props) => {
-  const userId = params.type;
-  const getUsers = await getUser({userId})
+const page = () => {
+  const [queryClient] = useState(() => new QueryClient())
+  const params = useParams();
+  const userId = params.type?.toString() || '';
 
   return (
     <main className='w-full h-full'>
-      <ProfileHeader name={getUsers.user.name}/>
       <div className='bg-[#1a1e23] p-3 rounded-lg'>
-        <ApolloWrapper>
-          <Userprofile userId={userId} user={getUsers.user}/>
-        </ApolloWrapper>
+        <QueryClientProvider client={queryClient}>
+          <Userprofile userid={userId}/>
+        </QueryClientProvider>
       </div>
     </main>
   )

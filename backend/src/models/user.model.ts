@@ -7,6 +7,8 @@ interface user extends Document{
     email: string,
     picture: string,
     password: string,
+    provider: string,
+    subId: string,
     generateToken(): Promise<string>;
     comparePassword(password:string, hash:string): Promise<boolean>
 }
@@ -32,6 +34,14 @@ const userSchema: Schema<user> = new mongoose.Schema({
     password:{
         type: String,
         required: true
+    },
+    provider:{
+        type: String,
+        default: 'local'
+    },
+    subId:{
+        type: String,
+        default: ''
     }
 })
 

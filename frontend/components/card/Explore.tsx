@@ -2,12 +2,15 @@
 
 import { getexplorepostpageintion } from "@/queries/Queries";
 import { useLazyQuery } from "@apollo/client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import Cookies from "js-cookie";
 import Image from "next/image";
 import ExploreGrid from "../ExploreGrid";
 import { Posts } from "@/Types/types";
 import { getUserPosts } from "@/utils/clientApollo";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "@/store/store";
+import { addPosts, increaseSkip, setScrollPosition, resetSkip } from "@/state/exploreSlice";
 
 const p = {
     id: '',
@@ -42,47 +45,61 @@ const p = {
 const Explore = () => {
   const userId = Cookies.get('user') || ''
   const [getuserPost] = useLazyQuery(getexplorepostpageintion)
-  const [posts,setPosts] = useState<Posts[]>([]);
-  const [hasMore, setHasMore] = useState(true);
+  const dispatch = useDispatch();
+  const scrollPosition = useSelector(
+    (state: RootState) => state.explore.scrollPosition
+  );
+  const posts = useSelector((state: RootState) => state.explore.posts);
+  const skip = useSelector((state: RootState) => state.explore.skip);
+  const hasMore = useSelector((state: RootState) => state.explore.hasMore);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [skip, setSkip] = useState(0);
   const [loading, setLoading] = useState(false);
   const [post, setPost] = useState<Posts>(p);
   
   const fetchMore = async () => {
-  if (!hasMore || loading) return;
-  setLoading(true);
-
-  const posts = await getUserPosts({ userId, skip, getuserPost });
-
-  const newPosts = posts || [];
-  if (newPosts.length < 10) setHasMore(false);
-
-  if (newPosts.length) {
-    setPosts(prev => {
-      const merged = [...prev, ...posts];
-      const unique = Array.from(new Map(merged.map(p => [p.id, p])).values());
-      return unique;
-    });
-  }
-  setLoading(false);
-};
+    if (!hasMore || loading) return;
+    setLoading(true);
+    const posts = await getUserPosts({ userId, skip, getuserPost });
+    const newPosts = posts || [];
+    if (newPosts) {
+      dispatch(addPosts(newPosts));
+    }
+    setLoading(false);
+  };
   
-  const handleScroll = () => {
-    const el = scrollRef.current;
-  if (!el) return; 
+  const handleScroll = (e: React.UIEvent<HTMLElement>) => {
+    const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
 
-  const { scrollTop, scrollHeight, clientHeight } = el;
-  if (scrollTop + clientHeight >= scrollHeight -100) {
-    setSkip(prev => prev + 1);
-  }
+    dispatch(setScrollPosition(scrollTop));
+
+    if (scrollTop + clientHeight >= scrollHeight - 100 && hasMore) {
+      dispatch(increaseSkip());
+    }
   };
   
   useEffect(() => {
-    fetchMore();
-  }, [skip]);
-
+    if (scrollRef.current && posts.length > 0) {
+      scrollRef.current.scrollTo({
+        top: scrollPosition,
+        behavior: "auto", // IMPORTANT: not smooth
+      });
+    }
+  }, [posts]);
          
+  useEffect(() => {
+    setLoading(false)
+    if (posts.length === 0) {
+      dispatch(resetSkip());
+      fetchMore();
+    }
+  }, []);
+  
+  useEffect(() => {
+    if (skip !== 0) {
+      fetchMore();
+    }
+  }, [skip])
+
   return (
     <div onScroll={handleScroll} ref={scrollRef} className={`gap-1 ${(posts.length > 0 && !post.id) ? 'grid' : 'flex'} grid-cols-4 grid-flow-dense auto-rows-[80px] md:auto-rows-[150px] w-full h-full overflow-y-scroll`}>
       {(posts.length > 0 && !post.id)? posts.map((post,index)=>(

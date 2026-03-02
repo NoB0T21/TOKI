@@ -6,57 +6,73 @@ import { useEffect, useRef, useState } from 'react'
 import { getFollowingPosts } from '@/utils/clientApollo';
 import PostCard from './PostCard';
 import { NoPosts } from '../Icons';
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "@/store/store";
+import { addPosts, increaseSkip, setScrollPosition } from "@/state/feedSlice";
 
 const Home = ({ids}:{ids:string[]}) => {
-  const [posts,setPosts] = useState<Posts2[]>([]);
-  const [hasMore, setHasMore] = useState(true);
+  const dispatch = useDispatch();
+  const scrollPosition = useSelector(
+    (state: RootState) => state.feed.scrollPosition
+  );
+  const posts = useSelector((state: RootState) => state.feed.posts);
+  const skip = useSelector((state: RootState) => state.feed.skip);
+  const hasMore = useSelector((state: RootState) => state.feed.hasMore);
   const [play, setPlay] = useState(true);
   const [getfollowingPost] = useLazyQuery(gethomepostpageintion)
-  const [skip, setSkip] = useState(0);
-   const containerRef = useRef<HTMLDivElement>(null)
-    const currentIndex = 0
+  const containerRef = useRef<HTMLDivElement>(null)
 
   const fetchMore = async () => {
     if (!hasMore) return;
-  
-    const homeposts = await getFollowingPosts({ids,skip,getfollowingPost})
+    console.log('yppp')
+    const homeposts = await getFollowingPosts({
+      ids,
+      skip,
+      getfollowingPost,
+    });
 
     const newPosts = homeposts || [];
-    if (newPosts.length < 10 ) {
-      setHasMore(false); // No more posts to fetch
+
+    if (newPosts.length > 0) {
+      dispatch(addPosts(newPosts));
     }
-    if (newPosts.length) {
-      setPosts((prev) => {
-        const merged = [...prev, ...homeposts];
-        const unique = Array.from(
-          new Map(merged.map((p) => [p.id, p])).values()
-        );
-        return unique;
-      });
-    }
-  }
+  };
   
   const handleScroll = (e: React.UIEvent<HTMLElement>) => {
     const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
+
+    dispatch(setScrollPosition(scrollTop));
+
     if (scrollTop + clientHeight >= scrollHeight - 100 && hasMore) {
-      setSkip(prev => prev + 1);
-      }
+      dispatch(increaseSkip());
+    }
   };
-  
+
+  useEffect(() => {
+    if (containerRef.current && posts.length > 0) {
+      containerRef.current.scrollTo({
+        top: scrollPosition,
+        behavior: "auto", // IMPORTANT: not smooth
+      });
+    }
+  }, [posts]);
+
   const handlepaly = (play:boolean) => {
     setPlay(play)
   }
-  
-  useEffect(() => {
-    fetchMore();
-  }, [skip]);
 
   useEffect(() => {
-    if (containerRef.current) {
-      const postElement = containerRef.current.children[currentIndex] as HTMLElement
-      postElement?.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' })
+    if (posts.length === 0) {
+      fetchMore();
     }
-  }, [currentIndex])
+  }, []);
+
+  
+  useEffect(() => {
+    if (skip !== 0) {
+      fetchMore();
+    }
+  }, [skip])
   
   return (
     <div ref={containerRef} onScroll={handleScroll} className='gap-1 rounded-md px-2 scroll-smooth grid grid-cols-1 w-full bg-[#1a1e23] pb-5 h-[77%] sm:h-[78vh] overflow-y-scroll snap-mandatory snap-y'>

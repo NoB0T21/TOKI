@@ -3,6 +3,7 @@ import { api } from "./api"
 
 export const getuserfollowing = async () => {
     const token = (await cookies()).get('token')?.value
+
     const Ids = await api.get('/user/following',{
         headers: {
             Authorization: `Bearer ${token}`,

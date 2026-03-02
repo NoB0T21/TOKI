@@ -21,11 +21,19 @@ const PostCard = ({file, profile, name, userID,play,followings,onSelect}:{file:P
   const [paused, setPaused] = useState(true);
   
   const likePost = async () => {
+    const currentLikes = Array.isArray(like) ? like : [];
+    const index = currentLikes.indexOf(user);
+    let updatedLikes;
+    if (index === -1) {
+      updatedLikes = [...currentLikes, user]; // Add like
+      setLikeCount(prev => prev + 1);
+    } else {
+      updatedLikes = currentLikes.filter(id => id !== user); // Remove like
+      setLikeCount(prev => (prev > 0 ? prev - 1 : 0));
+    }
+    setLike(updatedLikes);
     const data = await likePosts({id:file.id})
-    if(data.status === 200) {
-      const currentLikes = Array.isArray(like) ? like : [];
-      const index = currentLikes.indexOf(user);
-      let updatedLikes;
+    if(data.status !== 200) {
       if (index === -1) {
         updatedLikes = [...currentLikes, user]; // Add like
         setLikeCount(prev => prev + 1);
@@ -38,12 +46,20 @@ const PostCard = ({file, profile, name, userID,play,followings,onSelect}:{file:P
   }
 
   const followuser = async () => {
-     const data = await followusers({CreatorId:file.owner})
+    const currentLikes = Array.isArray(following) ? following : [];
+    const index = currentLikes.indexOf(user);
+    let updatedFollow;
+    if (index === -1) {
+      updatedFollow = [...currentLikes, user]; // Add like
+      //setLikeCount(prev => prev + 1);
+    } else {
+      updatedFollow = currentLikes.filter(id => id !== user); // Remove like
+      //setLikeCount(prev => (prev > 0 ? prev - 1 : 0));
+    }
+    setFollowing(updatedFollow);
+    
+    const data = await followusers({CreatorId:file.owner})
     if(data.status === 200) {
-      const currentLikes = Array.isArray(following) ? following : [];
-      const index = currentLikes.indexOf(user);
-      let updatedFollow;
-
       if (index === -1) {
         updatedFollow = [...currentLikes, user]; // Add like
         //setLikeCount(prev => prev + 1);

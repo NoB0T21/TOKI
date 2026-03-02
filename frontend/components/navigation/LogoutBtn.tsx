@@ -3,15 +3,18 @@
 import { useRouter } from 'next/navigation'
 import { Logout } from '../Icons'
 import Cookie from 'js-cookie'
+import { useDispatch } from 'react-redux'
+import { resetFeed } from '@/state/feedSlice'
 
 const LogoutBtn = () => {
     const router= useRouter()
-
+    const dispatch = useDispatch();
     const logout = () => {
       localStorage.removeItem('token')
       localStorage.removeItem('user')
       Cookie.remove('token')
       Cookie.remove('user')
+      dispatch(resetFeed());
       router.push('/sign-up')
     }
   return (

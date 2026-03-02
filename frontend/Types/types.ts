@@ -57,10 +57,14 @@ export interface Post{
 }
 
 export interface User {
+  _id: string,
   id: string,
   name: string,
   picture: string
   following:{
+    count: string[]
+  }
+  follower:{
     count: string[]
   }
 }
@@ -100,14 +104,15 @@ export interface Posts2 {
 
 export interface User2 {
   follower: {
-    count: string[]
+    count: [string[]]
     followerCount:number
   },
   following:{ 
-    count: string[]
+    count: [string[]]
     folloingCount:number
   },
   id: string,
+  _id?: string,
   name: string,
   picture: string,
   postcount:{

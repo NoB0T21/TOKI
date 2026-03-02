@@ -25,21 +25,19 @@ const GoogleForm = () => {
           }
         })
         if(responses.status === 200){
-          localStorage.setItem('token',res.access_token)
           Cookies.set("token", res.access_token, {
             expires: 1, // days
             sameSite: "strict",
-            secure: true
+            secure: process.env.PRODUCTION === 'false' ? false : true
           });
         }
-
         const form = new FormData();
           form.append('name', responses.data.name || '');
           form.append('email', responses.data.email || '');
           form.append('password',responses.data.sub || '');
           form.append('picture', responses.data.picture || '');
 
-        const response = await api.post(`/user/signup`,form,{withCredentials: true})
+        const response = await api.post(`/user/googlelogin`,form,{withCredentials: true})
         if(response.status !== 201 || 202){
           setResponseMsg(response.data.message)
           setShowToast(true)
@@ -55,7 +53,11 @@ const GoogleForm = () => {
             picture: raw.picture
           }
           localStorage.setItem('user', JSON.stringify(user));
-          Cookies.set('user',user._id, { expires: 1 });
+          Cookies.set("user", raw._id, {
+            expires: 1, // days
+            sameSite: "strict",
+            secure: process.env.PRODUCTION === 'false' ? false : true
+          });
           router.push('/')
           return
         }

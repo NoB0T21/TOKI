@@ -3,11 +3,15 @@ import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import Following from './card/Following'
 import Followers from './card/Followers'
-import { getfollowinguser, getstory } from '@/queries/Queries'
+import { getstory } from '@/queries/Queries'
 import { useLazyQuery } from '@apollo/client'
-import { useRouter } from 'next/navigation'
-import { getFollowingList, getstorys } from '@/utils/clientApollo'
+import { getstorys } from '@/utils/clientApollo'
 import StoryViewer from './story/StoryViewer'
+import { useDispatch, useSelector } from 'react-redux'
+import { RootState } from '@/store/store'
+import { addPosts, increaseSkip } from '@/state/userProfilefollowings'
+import { getProfileFollowingdata } from '@/utils/clientAction'
+import { addprofileFollowing, increaseSkipofprofile } from '@/state/profileFollowing'
 
 interface User {
     picture:string,
@@ -17,47 +21,42 @@ interface User {
     followinglist:string[],
     followerlist:string[]
     id:string,
+    userid?: string
 }
 
-const ProfileData = ({picture,posts,follower,following,followerlist,followinglist,id}:User) => {
+function paginateIds(ids: string[], page: number, limit: number=3) {
+  const start = (page - 1) * limit;
+  const end = start + limit;
+  return ids.slice(start, end);
+}
+
+const ProfileData = ({picture,posts,follower,following,followerlist,followinglist,id,userid}:User) => {
+  const dispatch = useDispatch();
+  let usersfollowing
+  let skip
+  let hasMore
+  usersfollowing = useSelector((state: RootState) => userid ? state.userProfilefollowings.userprofileFollowing : state.profileFollowing.profileFollowing);
+  userid ? skip = useSelector((state: RootState) => state.userProfilefollowings.skip) : skip = useSelector((state: RootState) => state.profileFollowing.skip);
+  userid ? hasMore = useSelector((state: RootState) => state.userProfilefollowings.hasMore) : hasMore = useSelector((state: RootState) => state.profileFollowing.hasMore);
   const [showFlowing, setShowFlowing] = useState(false);
   const [showFlower, setShowFlower] = useState(false);
   const [showsory, setShowsory] = useState(false);
-  const [usersfollowing,setUsersfollowing] = useState<User[]>([]);
-  const [getuserList] = useLazyQuery(getfollowinguser)
   const [getstoryList] = useLazyQuery(getstory)
-  const [hasMore, setHasMore] = useState(true);
-  const [skip, setSkip] = useState(0);
   const [story,Setstory] = useState<any>()
-  const router = useRouter();
 
   const fetchMorefollowing = async () => {
-      if (!hasMore) return;
-
-      const  data  = await getFollowingList({followinglist,skip,getuserList})
-      
-      const newPosts = data || [];
-      if (newPosts.length < 10 ) {
-        setHasMore(false); 
-      }
-      if (newPosts.length) {
-        setUsersfollowing((prev) => {
-          const merged = [...prev, ...data];
-          const unique = Array.from(
-            new Map(merged.map((p) => [p.id, p])).values()
-          );
-          return unique;
-        });
-      }
-      router.refresh();
-    }
+    if (!hasMore) return;
+    const followinguser = await getProfileFollowingdata(paginateIds(followinglist, skip, 14), skip, 14)      
+    const newPosts = followinguser || [];
+    if (newPosts.length) dispatch(userid ?addPosts(followinguser): addprofileFollowing(followinguser));
+  }
   
   const handleFollowingScroll = (e: React.UIEvent<HTMLElement>) => {
-      const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
-      if (scrollTop + clientHeight >= scrollHeight - 100 && hasMore) {
-        setSkip(prev => prev + 1);
-      }
-    };
+    const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
+    if (Math.round(scrollTop + clientHeight) >= scrollHeight && hasMore) {
+      userid ? dispatch(increaseSkip()) : dispatch(increaseSkipofprofile());
+    }
+  };
 
   const viewsstory = async () => {
     let usersFollowing:string[] = []
@@ -66,13 +65,15 @@ const ProfileData = ({picture,posts,follower,following,followerlist,followinglis
     if(getUsers.userstories.length!==0)Setstory(getUsers.userstories)
     
   }
-  
-  useEffect(() => {
-    fetchMorefollowing();
-  }, [skip]);
+
   useEffect(() => {
     viewsstory();
   }, []);
+
+  useEffect(() => {
+    fetchMorefollowing();
+  }, [skip]);
+
   return (
     <>
       <div className='flex justify-between sm:justify-start items-center sm:gap-6 bg-gradient-to-tl from-[#1A1C22] to-[#5A5C6A] backdrop-blur-5xl px-5 rounded-md w-full sm:w-90 lg:w-100 h-20'>
@@ -99,7 +100,7 @@ const ProfileData = ({picture,posts,follower,following,followerlist,followinglis
                 <div className="flex flex-col items-center gap-7 bg-[#1a1e23] p-3 border-[#3e4a57] border-1 rounded-2xl w-full h-full">
                   <h1 className="font-semibold text-2xl">Following</h1>
                   <div onScroll={handleFollowingScroll} className="flex flex-col gap-3 w-full h-full">
-                      {usersfollowing.map((user: User)=>(
+                      {usersfollowing.map((user: any)=>(
                           <Following user={user}/>
                       ))}
                   </div>
@@ -114,7 +115,7 @@ const ProfileData = ({picture,posts,follower,following,followerlist,followinglis
         <div className='top-0 left-0 z-6 absolute flex flex-col justify-center items-center gap-2 backdrop-blur-sm overflow-hidden w-screen h-screen'>
           <div className='w-110 lg:w-150 flex flex-col justify-center h-full'>
             <div className='flex justify-end'><p onClick={()=>setShowFlower(false)} className='flex cursor-pointer justify-center items-center bg-red-500 p-1 rounded-md size-7 text-xl'>X</p></div>
-            <Followers followinglist={followerlist}/>
+            <Followers followinglist={followerlist} userid={userid}/>
           </div>
         </div>
       )}

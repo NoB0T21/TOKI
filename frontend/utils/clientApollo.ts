@@ -10,6 +10,16 @@ export const getUserPosts = async ({userId,skip,getuserPost}:{userId:string,skip
     return data.exploreposts
 }
 
+export const getUserfollowings = async ({userId,getuserPost}:{userId:string,getuserPost:any}) =>{
+    const {data} = await getuserPost({
+        variables: {
+            id: userId,
+            owner: userId
+        },
+    });
+    return data.user
+}
+
 export const getUserPosts2 = async ({userId,skip,getuserPost}:{userId:string,skip:number,getuserPost:any}) =>{
     const { data } = await getuserPost({
       variables: {
@@ -47,6 +57,16 @@ export const getstorys= async ({ids,getStory}:{ids:string[],getStory:any}) => {
     const { data } = await getStory({
         variables: {
           following: ids,
+        },
+      })
+    return data
+}
+
+export const getUser= async ({userId, getuserPost}:{userId:string, getuserPost:any}) => {
+    const { data } = await getuserPost({
+        variables: {
+            id: userId,
+            owner: userId
         },
       })
     return data

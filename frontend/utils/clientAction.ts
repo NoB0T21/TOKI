@@ -100,3 +100,30 @@ export const getSongs= async ({query}:{query:string}) => {
     })
     return Ids.data
 }
+
+export const getProfiledata = async ({id}:{id:string}) => {
+    const token = Cookies.get('token');
+    const data = await api.get(`/user/profile/${id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        withCredentials: true,
+      }
+    );
+    return data.data.data
+}
+
+export const getProfileFollowingdata = async ( form:string[], page:number = 1, limit:number = 3) => {
+    const token = Cookies.get('token');
+    const data = await api.post(`/user/profile/followings?page=${page}&limit=${limit}`,
+        {userIds: form},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        withCredentials: true,
+      }
+    );
+    return data.data.data
+}

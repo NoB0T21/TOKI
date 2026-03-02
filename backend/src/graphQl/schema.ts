@@ -236,12 +236,18 @@ const RootQuery = new GraphQLObjectType({
                 excludeOwner: { type: GraphQLID },
             },
 
-            resolve: async (parent,args) => {
-                const randomPosts = await posts.find({owner: { $ne: args.excludeOwner }})
-                .skip(args.offset || 0)
-                .limit(args.limit || 5)
+            resolve: async (parent, args) => {
+                const filter: any = {};
+                console.log('excludeOwner',args.excludeOwner)
+                if (args.excludeOwner) {
+                    filter.owner = { $ne: args.excludeOwner };
+                }
 
-                return randomPosts.sort(() => Math.random()-0.6);
+                const user =  await posts.find(filter)
+                    .skip(args.offset || 0)
+                    .limit(args.limit || 10);
+
+                return user;
             }
         },
         followinguser:{

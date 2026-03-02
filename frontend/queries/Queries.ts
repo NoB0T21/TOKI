@@ -94,7 +94,7 @@ export  const getpostpageintion = gql`
 `
 
 export  const getexplorepostpageintion = gql`
-      query getuserPost($excludeOwner:ID, $offset: Int, $limit: Int){  
+      query getuserPost($excludeOwner: ID, $offset: Int, $limit: Int){  
         exploreposts(excludeOwner: $excludeOwner, offset: $offset, limit: $limit){
             id
             pictureURL

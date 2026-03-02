@@ -19,7 +19,6 @@ const middleware = async (req: Request, res: Response, next: NextFunction) => {
     res.status(401).json({ message: 'Access Token required' });
     return;
   }
-
   const accessToken = authHeader.split(' ')[1];
   try {
     const user = jwt.verify(accessToken, process.env.SECRET_KEY || 'default');

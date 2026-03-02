@@ -23,5 +23,5 @@ const followerSchema:Schema<Following> = new mongoose.Schema({
     }
 })
 
-const follower =mongoose.models.Follower || mongoose.model("Follower", followerSchema);
+const follower =mongoose.models.Follower || mongoose.model("followers", followerSchema);
 export default follower
