@@ -1,5 +1,5 @@
 import { graphqlHTTP } from 'express-graphql';
-import express from 'express'
+import express, { Request, Response } from 'express'
 import dotenv from 'dotenv'
 import cors from 'cors';
 import userRoutes from './routes/user.route'
@@ -28,5 +28,13 @@ app.use('/music',songRoutes)
 app.use('/data',middleware,graphqlHTTP({schema,graphiql:true}))
 
 app.use('/gg',graphqlHTTP({schema,graphiql:true}));
+
+app.get('/',async (req: Request,res: Response)=>{
+    await database();
+    res.status(200).json({
+        message: "hello",
+        success: true
+    })
+})
 
 export default app
