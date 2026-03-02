@@ -14,9 +14,6 @@ const nextConfig: NextConfig = {
     ],
     domains: ['yxbboqcacbihxherpisb.supabase.co','lh3.googleusercontent.com'], // allow images from Supabase
   },
-  eslint: {
-    ignoreDuringBuilds: true, // ✅ Ignore ESLint errors during build
-  },
   typescript: {
     ignoreBuildErrors: true, // ✅ Ignore TS errors during build
   },
