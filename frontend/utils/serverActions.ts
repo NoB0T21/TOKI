@@ -1,10 +1,11 @@
 import { cookies } from "next/headers"
 import { api } from "./api"
+import axios from "axios"
 
 export const getuserfollowing = async () => {
     const token = (await cookies()).get('token')?.value
 
-    const Ids = await api.get('/user/following',{
+    const Ids = await axios.get('https://toki-backend-qw63.onrender.com/user/following',{
         headers: {
             Authorization: `Bearer ${token}`,
         },
@@ -15,7 +16,7 @@ export const getuserfollowing = async () => {
 
 export const getstory = async ( form:string[]) => {
     const token = (await cookies()).get('token')?.value
-    const data = await api.put(`/story/story/view`,
+    const data = await axios.put(`https://toki-backend-qw63.onrender.com/story/story/view`,
         {ids: form},
       {
         headers: {
