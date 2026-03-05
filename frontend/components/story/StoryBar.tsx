@@ -19,7 +19,6 @@ const StoryBar = ({ids}:{ids:string[]}) => {
       id = story.id
       if (newPosts.length) dispatch(addstory(newPosts));
     }
-    console.log(stories)
     fetch()
   },[ids])
   return (
@@ -34,7 +33,7 @@ const StoryBar = ({ids}:{ids:string[]}) => {
         <p className='text-[10px] text-muted-foreground'>You story</p>
       </Link>
         {stories ? stories.map((story:Story, idx:number)=>(
-          <Link key={story.id} href={'/story/view'} >
+          <Link key={idx} href={'/story/view'} >
             <motion.div
               key={story.id}
               initial={{ opacity: 0, scale: 0.8 }}
