@@ -98,11 +98,9 @@ const Followers = ({followinglist,userid}:Following) => {
         return
       }
     }
-    
   return (
-    <div className="py-10 w-110 lg:w-150 h-screen">
-      <div className="flex flex-col gap-7 bg-[#1a1e23] mb-5 p-3 border-[#3e4a57] border rounded-2xl w-full h-full">
-        <h1 className="font-semibold text-2xl">Follower</h1>
+    <div className="py-10 w-150 h-screen">
+      <div className="flex flex-col gap-7 mb-5 bg-secondary p-3 border-border border rounded-2xl w-full h-full">
         {!users ? <>
           <div className="flex items-center justify-center h-full">
             Loading...
@@ -113,7 +111,7 @@ const Followers = ({followinglist,userid}:Following) => {
             className="space-y-3 w-full min-h-0 overflow-y-auto"
           >
             {users.map((user: User)=>(
-                <div  key={user.id} className="bg-zinc-900 px-7 rounded-md w-full h-15 overflow-hidden">
+                <div  key={user.id} className="bg-card px-7 rounded-md w-full h-15 overflow-hidden">
                     <div className="flex justify-between items-center w-full h-full">
                         <Link href={`/user/${user._id}`} className="flex items-center gap-4 h-full">
                           <Image
@@ -121,12 +119,12 @@ const Followers = ({followinglist,userid}:Following) => {
                             alt="Post"
                             width={700}
                             height={700}
-                            className="bg-black rounded-full size-12 object-contain md:object-cover"
+                            className="rounded-full object-cover border-2 border-background size-12"
                           />
                           {user.name}
                         </Link>
                          <p>
-                          {user.follower && following.includes(userID)?'message':'FollowBack'}
+                          {user.follower && user.follower.count[0].includes(userID)?'message':'FollowBack'}
                          </p>
                         {!userId && (userID !== user._id ? 
                         <div className="px-2 border-1 rounded-md" onClick={()=>removeuser({CreatorId:user._id})}>remove</div>

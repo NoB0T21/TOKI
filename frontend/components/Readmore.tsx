@@ -7,7 +7,7 @@ interface Props {
 
 const Readmore: React.FC<Props> = ({ text, maxLength = 100 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const displayText = isExpanded ? text : text.slice(0, maxLength) + '...';
+  const displayText = isExpanded ? text : text.slice(0, maxLength) + '';
 
   if (text.length <= maxLength) {
     return <p>{text}</p>;
@@ -18,16 +18,16 @@ const Readmore: React.FC<Props> = ({ text, maxLength = 100 }) => {
   };
   
   return (
-    <div className="text-gray-500 text-sm">
+    <div className="secondary_text text-sm">
       <pre className="break-words whitespace-pre-wrap">
         <code>{displayText}</code>
       </pre>
       {text.length > maxLength && (
         <button
           onClick={toggleReadMore}
-          className="text-blue-500 hover:underline"
+          className="secondary_text hover:underline"
         >
-          {isExpanded ? 'Read less' : 'Read more'}
+          {isExpanded ? 'read less' : '...'}
         </button>
       )}
     </div>

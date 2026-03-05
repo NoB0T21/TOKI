@@ -1,18 +1,26 @@
-import React from 'react'
-import { getstorys } from '@/utils/apolloclient'
 import StoryViewer from '@/components/story/StoryViewer'
-import { cookies } from 'next/headers'
-import { redirect } from 'next/navigation'
+import { getstory } from '@/utils/serverActions'
+import { redirect } from "next/navigation"
+import { cookies } from "next/headers"
 
-const page = async () => {
+
+const Page = async () => {
   const userId = (await cookies()).get('user')?.value
-    let usersFollowing:string[] = []
-    usersFollowing.push(userId||'')
-    const getUsers = await getstorys({ids:usersFollowing})
-    if(getUsers.userstories.length===0)redirect('/story')
+  
+  if (!userId) {
+    redirect('/sign-in')
+  }
+  const stories = await getstory([userId])
+  if (stories.length === 0) {
+    redirect('/story')
+  }
+
   return (
-    <StoryViewer routes='/story/ownview' stories={getUsers.userstories} />
+    <StoryViewer
+      routes="/story"
+      stories={stories}
+    />
   )
 }
 
-export default page
+export default Page

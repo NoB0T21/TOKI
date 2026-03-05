@@ -23,13 +23,12 @@ const StoryViewer: React.FC<StoryViewerProps> = ({ stories,routes}) => {
   const [progressKey, setProgressKey] = useState(0)
   const [storyIndex, setStoryIndex] = useState(0)
   const audioRef = useRef<HTMLAudioElement>(null);
+  const currentUser = stories[userIndex]
+  const currentStory = currentUser.stories[storyIndex] 
 
   
-  const currentUser = stories[userIndex]
-  const currentStory = currentUser.stories[storyIndex]
-  
   const nextStory = async () => {
-    await addviewStory({id:stories[userIndex].stories[storyIndex].id})
+    await addviewStory({id:stories[userIndex].stories[storyIndex]._id})
     if (!currentUser) return
     if (storyIndex < currentUser.stories.length - 1) {
       setStoryIndex((prev) => prev + 1)
@@ -40,11 +39,10 @@ const StoryViewer: React.FC<StoryViewerProps> = ({ stories,routes}) => {
       setProgressKey((prev)=>prev+1)
     }
     if (storyIndex === currentUser.stories.length-1 && userIndex === stories.length-1) {
-      routes!=='/nortoute'?route.push(routes):route.refresh()
+      routes!=='/nortoute'?route.push('/'):route.refresh()
     }
   }
-  
-  if (!currentStory) return <div>No more stories</div>
+
   
   const prevStory = () => {
     if (!currentUser || !currentStory) return;
@@ -67,13 +65,20 @@ const StoryViewer: React.FC<StoryViewerProps> = ({ stories,routes}) => {
   };
   
   useEffect(() => {
-    if (!currentStory) return;
-    
+    if(!currentUser.stories[0]) route.push(routes)
+    if (!currentStory) route.push(routes);
     controls.set({ width: 0 }); // Reset animation
     if (!isPaused) {
       controls.start({
         width: '100%',
-        transition: { duration: 15 },
+        transition: { 
+          duration: 15,
+          onComplete: ()=>{
+            if (storyIndex === currentUser.stories.length-1 && userIndex === stories.length-1) {
+              routes!=='/nortoute'?route.push('/'):route.refresh()
+            }
+          }
+        },
       });
     }else {
       controls.stop(); // Pauses the animation
@@ -81,7 +86,7 @@ const StoryViewer: React.FC<StoryViewerProps> = ({ stories,routes}) => {
   }, [userIndex, storyIndex, isPaused]);
   
   useEffect(()=>{
-    if(stories.length === 0 || !stories)route.push('/story')
+    if(stories.length === 0 || !stories)route.push(routes)
   },[])
 
 useEffect(() => {
@@ -89,7 +94,7 @@ useEffect(() => {
 
   const a = audioRef.current;
 
-  a.currentTime = currentStory.start;
+  a.currentTime = currentStory.start||0;
   a.play().catch(() => { /* autoplay block */ });
 
   const onTime = () => {
@@ -104,7 +109,7 @@ useEffect(() => {
 
   
   return (
-    <div className="z-50 w-full h-full">
+    <div className="z-50 w-full h-90">
       <div className="block relative content-center bg-[#1a1e23] rounded-xl w-full h-full overflow-hidden">
         {/* Timer Progress Bar */}
         <div className={`grid gap-x-0.5 grid-cols-${currentUser.stories.length} top-0 left-0 absolute w-full h-1`}>
@@ -141,7 +146,7 @@ useEffect(() => {
           className='w-full h-full'
         >
           <Image
-            src={currentStory.imageUrl}
+            src={currentStory?.imageUrl||''}
             alt="story"
             width={1960}
             height={1080}
@@ -159,7 +164,7 @@ useEffect(() => {
           />
           <div>
           <div className="font-bold">{currentUser.name}</div>
-          {currentStory.song && 
+          {currentStory?.song && 
             <>
               <div className='flex gap-1 items-center'>
                   <p className='size-6 animate-spin'><Music/></p>
@@ -171,7 +176,7 @@ useEffect(() => {
           }
           </div>
         </div>
-        {routes === '/story/ownview' && <div className='top-2 right-2 absolute'>
+        {routes === '/story' && <div className='top-2 right-2 absolute'>
           <button
             onClick={() => setIsPaused((prev) => !prev)}
             className="size-6 text-white"
@@ -179,7 +184,7 @@ useEffect(() => {
             <Menu/>
           </button>
         </div>}
-        <AnimatePresence>{isPaused && <StoryDropdown id={stories[0].stories[storyIndex].id} count={stories[0].stories[storyIndex].views.storyviewsCount}/>}</AnimatePresence>
+        <AnimatePresence>{isPaused && <StoryDropdown id={stories[0].stories[storyIndex]._id} count={stories[0].stories[storyIndex].view.storyviewsCount}/>}</AnimatePresence>
         
       </div>
     </div>

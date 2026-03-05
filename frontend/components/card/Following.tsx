@@ -43,15 +43,15 @@ const Following = ({user}:any) => {
   }
 
   return (
-    <div key={user.id} className="bg-zinc-900 px-7 rounded-md w-full h-15 overflow-hidden">
+    <div key={user.id} className="bg-card px-7 rounded-md w-full h-15 overflow-hidden">
       <div className="flex justify-between items-center w-full h-full">
-        <Link href={`/user/${user.id}`} className="flex items-center gap-4 h-full">
+        <Link href={`/user/${user._id}`} className="flex items-center gap-4 h-full">
           <Image
             src={user.picture}
             alt="Post"
             width={700}
             height={700}
-            className="bg-black rounded-full size-12 object-contain md:object-cover"
+            className="rounded-full object-cover border-2 border-background size-12"
           />
           {user.name}
         </Link>

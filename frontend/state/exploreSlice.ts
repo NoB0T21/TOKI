@@ -10,7 +10,7 @@ interface ExploreState {
 
 const initialState: ExploreState = {
   posts: [],
-  skip: 0,
+  skip: 1,
   hasMore: true,
   scrollPosition: 0,
 };
@@ -28,7 +28,7 @@ const exploreSlice = createSlice({
 
       state.posts = unique;
 
-      if (action.payload.length < 10) {
+      if (action.payload.length < 16) {
         state.hasMore = false;
       }
     },

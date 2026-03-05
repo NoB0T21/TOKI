@@ -11,8 +11,7 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "lh3.googleusercontent.com",
       },
-    ],
-    domains: ['yxbboqcacbihxherpisb.supabase.co','lh3.googleusercontent.com'], // allow images from Supabase
+    ], // allow images from Supabase
   },
   typescript: {
     ignoreBuildErrors: true, // ✅ Ignore TS errors during build

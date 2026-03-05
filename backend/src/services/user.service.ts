@@ -149,6 +149,46 @@ export const getUserFollowings = async (userId:string) => {
                   preserveNullAndEmptyArrays: true
                 },},
                 {
+                  $lookup:{
+                    from: "followers",
+                    let: { uid: "$owner" },
+                    pipeline: [
+                      { $match: { $expr: { $eq: ["$userID", "$$uid"] } } },
+                      {
+                        $group: {
+                          _id: null,
+                          followerCount: {$sum: "$followerCount"},
+                          count: { $first: "$count" }
+                        }
+                      }
+                    ],
+                    as: "followers"
+                  },
+                },
+                {
+                  $lookup: {
+                    from: "likes",
+                    let: { userID: "$_id" },
+                    pipeline: [
+                      {
+                        $match: {
+                          $expr: { $eq: ["$userID", "$$userID"] }
+                        }
+                      }
+                    ],
+                    as: "likes"
+                  }
+                },
+                {
+                  $lookup: {
+                    from: "users",
+                    localField: "owner",
+                    foreignField: "_id",
+                    as: "user"
+                  }
+                },
+                { $unwind: { path: "$user", preserveNullAndEmptyArrays: true } },
+                {
                   $project: {
                     id: "$_id",
                     pictureURL: 1,
@@ -156,13 +196,24 @@ export const getUserFollowings = async (userId:string) => {
                     creator: 1,
                     message: 1,
                     tags: 1,
+                    createdAt: 1,
                     title: 1,
                     start: 1,
                     end: 1,
+                    follower: { $arrayElemAt: ["$followers", 0] },
+                    user: {
+                      id: "$user._id",
+                      name: "$user.name",
+                      picture: "$user.picture"
+                    },
                     song: {
                       title: "$song.title",
                       artist: "$song.artist",
                       previewUrl: "$song.previewUrl"
+                    },
+                    like:{
+                      like: "$likes.like",
+                      likeCount: "$likes.likeCount"
                     }
                   }
                 }
@@ -236,5 +287,13 @@ export const getUserFollowingsData = async (userId:string[]) => {
       }
     }
   ]);
+  return result;
+};
+
+export const getuserbyids = async (userId:string[]) => {
+  const id = userId.map( item => new mongoose.Types.ObjectId(item))
+  const result = await user.find({
+    _id: { $in: id }
+  }).select('_id name picture');
   return result;
 };

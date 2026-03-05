@@ -1,14 +1,13 @@
 'use client'
-import { gethomepostpageintion } from '@/queries/Queries';
-import { useLazyQuery } from '@apollo/client';
 import { Posts2 } from '@/Types/types';
 import { useEffect, useRef, useState } from 'react'
-import { getFollowingPosts } from '@/utils/clientApollo';
 import PostCard from './PostCard';
 import { NoPosts } from '../Icons';
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/store/store";
 import { addPosts, increaseSkip, setScrollPosition } from "@/state/feedSlice";
+import { getProfilePosts } from '@/utils/clientAction';
+import StoryBar from '@/components/story/StoryBar'
 
 const Home = ({ids}:{ids:string[]}) => {
   const dispatch = useDispatch();
@@ -19,23 +18,14 @@ const Home = ({ids}:{ids:string[]}) => {
   const skip = useSelector((state: RootState) => state.feed.skip);
   const hasMore = useSelector((state: RootState) => state.feed.hasMore);
   const [play, setPlay] = useState(true);
-  const [getfollowingPost] = useLazyQuery(gethomepostpageintion)
   const containerRef = useRef<HTMLDivElement>(null)
-
   const fetchMore = async () => {
     if (!hasMore) return;
-    console.log('yppp')
-    const homeposts = await getFollowingPosts({
-      ids,
-      skip,
-      getfollowingPost,
-    });
+    const homeposts = await getProfilePosts(ids,skip);
 
     const newPosts = homeposts || [];
 
-    if (newPosts.length > 0) {
-      dispatch(addPosts(newPosts));
-    }
+    dispatch(addPosts(newPosts));
   };
   
   const handleScroll = (e: React.UIEvent<HTMLElement>) => {
@@ -43,7 +33,7 @@ const Home = ({ids}:{ids:string[]}) => {
 
     dispatch(setScrollPosition(scrollTop));
 
-    if (scrollTop + clientHeight >= scrollHeight - 100 && hasMore) {
+    if (Math.round(scrollTop + clientHeight) >= scrollHeight && hasMore) {
       dispatch(increaseSkip());
     }
   };
@@ -52,7 +42,7 @@ const Home = ({ids}:{ids:string[]}) => {
     if (containerRef.current && posts.length > 0) {
       containerRef.current.scrollTo({
         top: scrollPosition,
-        behavior: "auto", // IMPORTANT: not smooth
+        behavior: "auto",
       });
     }
   }, [posts]);
@@ -75,7 +65,8 @@ const Home = ({ids}:{ids:string[]}) => {
   }, [skip])
   
   return (
-    <div ref={containerRef} onScroll={handleScroll} className='gap-1 rounded-md px-2 scroll-smooth grid grid-cols-1 w-full bg-[#1a1e23] pb-5 h-[77%] sm:h-[78vh] overflow-y-scroll snap-mandatory snap-y'>
+    <div ref={containerRef} onScroll={handleScroll} className='scroll-smooth grid grid-cols-1 w-full pb-5 h-screen overflow-y-scroll'>
+      <StoryBar ids={ids}/>
       {posts.length > 0 ? 
         posts.map((post:Posts2)=>(
           <PostCard onSelect={handlepaly} key={post.id} play={play} followings={post.follower.count} file={post} profile={post.user.picture} name={post.user.name} userID={post.user.id}/>

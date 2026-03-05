@@ -10,7 +10,7 @@ interface FeedState {
 
 const initialState: FeedState = {
   posts: [],
-  skip: 0,
+  skip: 1,
   hasMore: true,
   scrollPosition: 0,
 };

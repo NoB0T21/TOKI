@@ -5,11 +5,9 @@ import Providers from '@/context/tankstack';
 const page = async () => {
 
   return (
-    <div className="w-full h-full overflow-hidden">
-        <Providers>
-          <Userprofile/>
-        </Providers>
-    </div>
+    <Providers>
+      <Userprofile/>
+    </Providers>
   )
 }
 

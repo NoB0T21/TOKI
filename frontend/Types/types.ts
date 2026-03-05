@@ -14,6 +14,7 @@ export interface Posts {
   pictureURL: string
   message:string,
   title:string,
+  createdAt: Date,
   tags: string[],
   song:{
         title: String,
@@ -82,7 +83,8 @@ export interface Posts2 {
         previewUrl: String,
       }
   start:number;
-  end:number
+  end:number,
+  createdAt:Date,
   tags: [],
   originalname:string,
   like:{
@@ -135,6 +137,7 @@ export type StoryElement = {
 }
 
 export interface Story {
+  userId:string,
   id:string,
   name:string
     picture:string
@@ -142,14 +145,14 @@ export interface Story {
       count:string[]
     }
     stories:[{
-      id:string
+      _id:string
       userID:string
       imageUrl:string
       createdAt:string
       SongId: string,
       start: number,
       end: number
-      views:{
+      view:{
         count:string[]
         storyviewsCount:number
       }
@@ -180,5 +183,4 @@ export interface Track {
 export enum PostUploadPage {
   page1 = 1,
   page2 = 2,
-  page3 = 3,
 }

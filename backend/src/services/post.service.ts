@@ -1,4 +1,4 @@
-import { Types } from "mongoose";
+import mongoose, { Types } from "mongoose";
 import postModel from '../models/posts.models'
 import likeModel from '../models/like.model'
 import PostCount from '../models/post.count.model'
@@ -147,4 +147,302 @@ export const  decfollowingCount = async ({creatorId}:{creatorId:any}) => {
     { new: true }                 // Return the updated document
   );
  return
+}
+
+export const  getExplorePostExcludeingUser = async (userId:string, page:number = 1) => {
+  if(!userId) return
+  const limit = 16;
+  const skip = (page - 1) * limit;
+  const result = await postModel.aggregate([
+    {
+      $match: {
+        owner: { $ne: userId }
+      }
+    },
+    { $skip: skip },
+    { $limit: limit },
+    {
+      $lookup: {
+        from: "songs",
+        localField: "SongId",
+        foreignField: "_id",
+        as: "song"
+      }
+    },
+    {
+      $unwind: {
+        path: "$song",
+        preserveNullAndEmptyArrays: true
+      }
+    },
+    {
+      $lookup: {
+        from: "likes",
+        let: { userID: "$_id" },
+        pipeline: [
+          {
+            $match: {
+              $expr: { $eq: ["$userID", "$$userID"] }
+            }
+          }
+        ],
+        as: "likes"
+      }
+    },
+    {
+      $lookup: {
+        from: "users",
+        localField: "owner",
+        foreignField: "_id",
+        as: "user"
+      }
+    },
+    { $unwind: { path: "$user", preserveNullAndEmptyArrays: true } },
+    {
+      $lookup:{
+        from: "followers",
+        let: { uid: "$owner" },
+        pipeline: [
+          { $match: { $expr: { $eq: ["$userID", "$$uid"] } } },
+          {
+            $group: {
+              _id: "$_id",
+              followerCount: {$sum: "$followerCount"},
+              count: { $first: "$count" }
+            }
+          }
+        ],
+        as: "followers"
+      },
+    },
+    {
+      $project: {
+        id: "$_id",
+        pictureURL: 1,
+        owner: 1,
+        creator: 1,
+        message: 1,
+        tags: 1,
+        title: 1,
+        start: 1,
+        end: 1,
+        song: {
+          title: "$song.title",
+          artist: "$song.artist",
+          previewUrl: "$song.previewUrl"
+        },
+        follower: { $arrayElemAt: ["$followers", 0] },
+        user: {
+          id: "$user._id",
+          name: "$user.name",
+          picture: "$user.picture"
+        },
+        like:{
+          like: "$likes.like",
+          likeCount: "$likes.likeCount"
+        }
+      }
+    }
+  ]);
+  return result;
+}
+
+export const  getProfilePostByIds = async (userId:string[], page:number = 1) => {
+  const ids = userId.map( item => new mongoose.Types.ObjectId(item))
+  if(!userId) return
+  const limit = 16;
+  const skip = (page - 1) * limit;
+  const result = await postModel.aggregate([
+    {
+      $match: {
+        owner: { $in: ids }
+      }
+    },
+    { $skip: skip },
+    { $limit: limit },
+    {
+      $lookup: {
+        from: "songs",
+        localField: "SongId",
+        foreignField: "_id",
+        as: "song"
+      }
+    },
+    {
+      $unwind: {
+        path: "$song",
+        preserveNullAndEmptyArrays: true
+      }
+    },
+    {
+      $lookup: {
+        from: "likes",
+        let: { userID: "$_id" },
+        pipeline: [
+          {
+            $match: {
+              $expr: { $eq: ["$userID", "$$userID"] }
+            }
+          }
+        ],
+        as: "likes"
+      }
+    },
+    {
+      $lookup: {
+        from: "users",
+        localField: "owner",
+        foreignField: "_id",
+        as: "user"
+      }
+    },
+    { $unwind: { path: "$user", preserveNullAndEmptyArrays: true } },
+    {
+      $lookup:{
+        from: "followers",
+        let: { uid: "$owner" },
+        pipeline: [
+          { $match: { $expr: { $eq: ["$userID", "$$uid"] } } },
+          {
+            $group: {
+              _id: "$_id",
+              followerCount: {$sum: "$followerCount"},
+              count: { $first: "$count" }
+            }
+          }
+        ],
+        as: "followers"
+      },
+    },
+    {
+      $project: {
+        id: "$_id",
+        pictureURL: 1,
+        owner: 1,
+        creator: 1,
+        message: 1,
+        tags: 1,
+        title: 1,
+        start: 1,
+        end: 1,
+        createdAt: 1,
+        song: {
+          title: "$song.title",
+          artist: "$song.artist",
+          previewUrl: "$song.previewUrl"
+        },
+        follower: { $arrayElemAt: ["$followers", 0] },
+        user: {
+          id: "$user._id",
+          name: "$user.name",
+          picture: "$user.picture"
+        },
+        like:{
+          like: "$likes.like",
+          likeCount: "$likes.likeCount"
+        }
+      }
+    }
+  ]);
+  return result;
+}
+
+export const  getProfilePosts = async (userId:string, page:number = 1) => {
+  const ids = new mongoose.Types.ObjectId(userId)
+  if(!userId) return
+  const limit = 16;
+  const skip = (page - 1) * limit;
+  const result = await postModel.aggregate([
+    {
+      $match: {
+        owner: ids
+      }
+    },
+    { $skip: skip },
+    { $limit: limit },
+    {
+      $lookup: {
+        from: "songs",
+        localField: "SongId",
+        foreignField: "_id",
+        as: "song"
+      }
+    },
+    {
+      $unwind: {
+        path: "$song",
+        preserveNullAndEmptyArrays: true
+      }
+    },
+    {
+      $lookup: {
+        from: "likes",
+        let: { userID: "$_id" },
+        pipeline: [
+          {
+            $match: {
+              $expr: { $eq: ["$userID", "$$userID"] }
+            }
+          }
+        ],
+        as: "likes"
+      }
+    },
+    {
+      $lookup: {
+        from: "users",
+        localField: "owner",
+        foreignField: "_id",
+        as: "user"
+      }
+    },
+    { $unwind: { path: "$user", preserveNullAndEmptyArrays: true } },
+    {
+      $lookup:{
+        from: "followers",
+        let: { uid: "$owner" },
+        pipeline: [
+          { $match: { $expr: { $eq: ["$userID", "$$uid"] } } },
+          {
+            $group: {
+              _id: "$_id",
+              followerCount: {$sum: "$followerCount"},
+              count: { $first: "$count" }
+            }
+          }
+        ],
+        as: "followers"
+      },
+    },
+    {
+      $project: {
+        id: "$_id",
+        pictureURL: 1,
+        owner: 1,
+        creator: 1,
+        message: 1,
+        tags: 1,
+        title: 1,
+        start: 1,
+        end: 1,
+        createdAt: 1,
+        song: {
+          title: "$song.title",
+          artist: "$song.artist",
+          previewUrl: "$song.previewUrl"
+        },
+        follower: { $arrayElemAt: ["$followers", 0] },
+        user: {
+          id: "$user._id",
+          name: "$user.name",
+          picture: "$user.picture"
+        },
+        like:{
+          like: "$likes.like",
+          likeCount: "$likes.likeCount"
+        }
+      }
+    }
+  ]);
+  return result;
 }

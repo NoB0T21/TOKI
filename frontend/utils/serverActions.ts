@@ -12,3 +12,17 @@ export const getuserfollowing = async () => {
     })
     return Ids.data.creatorIds
 }
+
+export const getstory = async ( form:string[]) => {
+    const token = (await cookies()).get('token')?.value
+    const data = await api.put(`/story/story/view`,
+        {ids: form},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        withCredentials: true,
+      }
+    );
+    return data.data.data
+}

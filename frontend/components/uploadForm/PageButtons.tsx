@@ -3,20 +3,18 @@ import { PostUploadPage } from '@/Types/types';
 import React, { Dispatch, SetStateAction } from 'react'
 
 const PageButtons = ({pages,SetPages}:{pages:PostUploadPage,SetPages:Dispatch<SetStateAction<PostUploadPage>>}) => {
-    const isLastPage = pages === PostUploadPage.page3;
+    const isLastPage = pages === PostUploadPage.page2;
     const isfirstPage = pages === PostUploadPage.page1;
     
     const handleNext = () => {
-        if (pages === PostUploadPage.page1) SetPages(PostUploadPage.page2);
-        else if (pages === PostUploadPage.page2) SetPages(PostUploadPage.page3);
+        SetPages(PostUploadPage.page2);
     };
 
     const handleBack = () => {
-        if(pages === PostUploadPage.page3)SetPages(PostUploadPage.page2);
-        else if(pages === PostUploadPage.page2)SetPages(PostUploadPage.page1);
+        SetPages(PostUploadPage.page1);
     };
     return (
-        <div className='flex justify-between sm:justify-center px-3 w-full gap-3'>
+        <div className='flex justify-between sm:justify-center  gap-3'>
             {(isLastPage || !isfirstPage) && 
                 <button
                     onClick={handleBack}

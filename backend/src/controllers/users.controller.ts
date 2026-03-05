@@ -8,6 +8,7 @@ import jwt from 'jsonwebtoken'
 import following from "../models/user.following.model"
 import ErrorHandler from "../utils/errorHandler"
 import user from "../models/user.model"
+import { getuserStoryByids } from "../services/story.service"
 
 const client = new OAuth2Client(process.env.GOOGLE_ID)
 
@@ -294,7 +295,6 @@ export const getfollowings = async (req: Request, res:Response) => {
 export const getUserProfile = async (req: Request, res:Response) => {
     let userId = req.params.id;
     if(!userId)userId = req.user._id;
-    console.log(userId)
     if(!userId){
         res.status(401).json({ message: 'Access Token required' });
         return;
@@ -341,6 +341,38 @@ export const getUserProfileFollowing = async (req: Request, res:Response) => {
             return res.status(200).json({
                 message: "verified",
                 data:creatorIds,
+                success: true,
+            })
+    } catch (error) {
+        return res.status(500).json({
+            message: "server error",
+            success: false,
+        })
+    }
+}
+
+export const getUserByIds = async (req: Request, res:Response) => {
+    const {userIds} = req.body
+    const id = req.user._id
+    if(!userIds){
+        res.status(401).json({ message: 'Access Token required' });
+        return;
+    }
+    try {
+        const creatorIds:any = await getuserStoryByids(userIds)
+        if(!creatorIds){
+                return res.status(200).json({
+                    message: "not verified",
+                    success: false,
+                })
+            }
+            
+            return res.status(200).json({
+                message: "verified",
+                data:{
+                    creatorIds,
+                    id
+                },
                 success: true,
             })
     } catch (error) {

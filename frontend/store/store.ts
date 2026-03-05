@@ -5,6 +5,7 @@ import profileFollowersReducer from "../state/profileFollowers";
 import profileFollowingReducer from "../state/profileFollowing";
 import userProfilefollowingsReducer from "../state/userProfilefollowings";
 import userProfileFollowersReducer from "../state/userProfileFollowers";
+import storyReducer from "../state/storySlicer";
 
 export const store = configureStore({
   reducer: {
@@ -14,6 +15,7 @@ export const store = configureStore({
     profileFollowing: profileFollowingReducer,
     userProfilefollowings: userProfilefollowingsReducer,
     userProfileFollowers: userProfileFollowersReducer,
+    story: storyReducer,
   },
 });
 

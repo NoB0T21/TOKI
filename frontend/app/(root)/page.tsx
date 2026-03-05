@@ -1,19 +1,16 @@
 import { DashboardHeader } from '@/components/navigation/Header'
-import { ApolloWrapper } from '@/context/ApolloClientProvider'
 import Home from '@/components/card/Home'
-import React from 'react'
-import StoryBar from '@/components/story/StoryBar'
 import { getuserfollowing } from '@/utils/serverActions'
+import Providers from '@/utils/provider'
 
 const page = async () => {
   const usersFollowing = await getuserfollowing()
   return (
-    <div className='w-full space-y-3 h-full'>
+    <div className='w-full h-full'>
       <DashboardHeader/>
-      <StoryBar ids={usersFollowing}/>
-      <ApolloWrapper>
-          <Home ids={usersFollowing}/>
-      </ApolloWrapper>
+      <Providers>
+        <Home ids={usersFollowing}/>
+      </Providers>
     </div>
   )
 }

@@ -127,3 +127,84 @@ export const getProfileFollowingdata = async ( form:string[], page:number = 1, l
     );
     return data.data.data
 }
+
+export const getuserstorys = async ( form:string[] ) => {
+    const token = Cookies.get('token');
+    const data = await api.post(`/user/get`,
+        {userIds: form},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        withCredentials: true,
+      }
+    );
+    console.log(data.data.data)
+    return data.data.data
+}
+
+export const getExplorePosts = async ( page:number = 1) => {
+    const token = Cookies.get('token');
+    const data = await api.get(`/post/get?page=${page}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        withCredentials: true,
+      }
+    );
+    return data.data.data
+}
+
+export const getProfilePostowner = async ( page:number = 1) => {
+    const token = Cookies.get('token');
+    const data = await api.get(`/post/get/profile?page=${page}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        withCredentials: true,
+      }
+    );
+    return data.data.data
+}
+
+export const getProfilePosts = async ( form:string[], page:number = 1 ) => {
+    const token = Cookies.get('token');
+    const data = await api.put(`/post/get?page=${page}`,
+        {ids: form},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        withCredentials: true,
+      }
+    );
+    return data.data.data
+}
+
+export const getstory = async ( form:string[]) => {
+    const token = Cookies.get('token');
+    const data = await api.put(`/story/story/view`,
+        {ids: form},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        withCredentials: true,
+      }
+    );
+    return data.data.data
+}
+
+export const getuserfollowing = async () => {
+    const token = Cookies.get('token');
+
+    const Ids = await api.get('/user/following',{
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+        withCredentials: true
+    })
+    return Ids.data.creatorIds
+}

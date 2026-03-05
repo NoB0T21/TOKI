@@ -8,12 +8,13 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Toasts from "../toasts/Toasts";
 import { postFormapi } from "@/utils/clientAction";
-import { Gemini } from "../Icons";
+import { Discribtion, Gemini, Tags, Title } from "../Icons";
 import { tryLoadManifestWithRetries } from "next/dist/server/load-components";
 import MusicSelect from "../story/MusicSelect";
 import {PostUploadPage, Track} from '../../Types/types'
 import PageButtons from "./PageButtons";
 import MockPostcard from "../card/MockPostcard";
+import Link from "next/link";
 
 const formSchema = z.object({
     creator: z.string().min(1, "creator required"),
@@ -263,79 +264,91 @@ useEffect(() => {
     };
     
   return (
-    <div className='flex sm:flex-row flex-col justify-center mt-5 w-full h-full'>
-        <div className="flex flex-col items-center w-full h-full">
-            <form className="flex flex-col gap-3 sm:flex-row-reverse items-center w-full">
-                <div>
-                    <div className="flex justify-start items-start sm:w-90 h-100">
-                            <MockPostcard 
-                                pictureURL={files ? convertFileToUrl(files):''} 
-                                message={formData.message}
-                                song={Track}
-                                tags={formData.tags}
-                                name={formData.title}
-                            />
-                        </div>
-                </div>
-                <div className="flex flex-col gap-4 px-1.5 py-2 rounded-md w-full">
-                    {PostUploadPage.page1 === pages && 
-                        <div className="flex flex-col gap-3">
-                            {error.files && <p className="mb-1 text-red-500 text-xs">{error.files}</p>}
-                            <div className="relative bg-zinc-700 p-2 rounded-md w-auto max-w-60 h-10">
-                                Upload youe post
-                                <input 
-                                    className='left-0 absolute opacity-0 w-full' 
-                                    type='file' 
-                                    onChange={(e)=>{
-                                        const file = e.target.files?.[0];
-                                        if (file) {
-                                            setFiles(file);
-                                        }}} 
-                                    name='file' 
-                                    accept="image/*" 
-                                    required 
-                                    placeholder='Upload'
-                                />
-                            </div>
-                        </div>
-                    }
-                    {PostUploadPage.page2 === pages &&
-                        <MusicSelect reg={60} onSelect={handleTrackSelect}/>
-                    }
-                    {PostUploadPage.page3 === pages &&
-                        <>
-                            <div className="relative w-full max-w-120">
-                                <input name='text' type="text" value={formData.title} onChange={(e) => {setFormData({...formData, title: e.target.value})}}required 
-                                    className="peer bg-zinc-800 p-2 border border-zinc-700 focus:border-indigo-500 rounded-md outline-none w-full h-10 text-white transition-all duration-200"
-                                />
-                                <label className="left-2 absolute bg-[#212121] px-1 rounded-sm text-gray-400 peer-focus:text-[#2196f3] peer-valid:text-[#2196f3] text-xs text-clip scale-100 peer-focus:scale-75 peer-valid:scale-75 transition-all translate-y-3 peer-focus:-translate-y-2 peer-valid:-translate-y-2 duration-200 pointer-events-none transform">
-                                    <span>name</span>
-                                </label>
-                            </div>
-                            <div className="relative w-full md:w-2/3 max-w-120">
+    <>
+        {/* Header */}
+        <div className="sticky top-0 z-50 glass border-b border-border px-4 py-3">
+            <div className="flex items-center justify-between">
+            <PageButtons pages={pages} SetPages={SetPages}/>
+            <h2 className="text-base font-semibold font-display text-foreground">New Post</h2>
+            <Link href="/">
+                <div className="h-6 w-6 text-foreground text-center">x</div>
+            </Link>
+            </div>
+        </div>
+        <div className='flex sm:flex-row flex-col justify-center w-full h-full'>
+            <div className="flex flex-col items-center w-full h-full ">
+                <form className="flex flex-col gap-3 items-center w-full h-120 overflow-y-scroll">
+                    <div className="flex relative justify-start items-start w-full">
+                        <MockPostcard 
+                            pictureURL={files ? convertFileToUrl(files):''} 
+                            message={formData.message}
+                            song={Track}
+                            tags={formData.tags}
+                            name={formData.title}
+                        />
+                        <input 
+                            className='left-0 absolute opacity-0 w-full h-3/4 z-20' 
+                            type='file' 
+                            onChange={(e)=>{
+                                const file = e.target.files?.[0];
+                                if (file) {
+                                    setFiles(file);
+                                }}} 
+                            name='file' 
+                            accept="image/*" 
+                            required 
+                            placeholder='Upload'
+                        />
+                    </div>
+                    <div className="flex flex-col gap-4 px-1.5 py-2 rounded-md w-full">
+                        {PostUploadPage.page1 === pages &&
+                            <MusicSelect reg={60} onSelect={handleTrackSelect}/>
+                        }
+                        {PostUploadPage.page2 === pages &&
+                            <>
+                                <div className="relative flex w-full max-w-120 gap-1">
+                                    <div className="size-4 flex justify-center items-center text-muted-foreground h-12"><Title/></div>
+                                    <input 
+                                        name='text' 
+                                        type="text" 
+                                        value={formData.title} 
+                                        onChange={(e) => {setFormData({...formData, title: e.target.value})}}
+                                        required
+                                        placeholder="title"
+                                        className="w-full bg-transparent text-sm text-foreground placeholder:text-muted-foreground h-12 border-b border-border focus:outline-none"
+                                    />
+                                </div>
                                 {isGenerating && <div className="border-2 border-t-transparent border-blue-400 rounded-full w-5 h-5 animate-spin"></div>}
-                                <textarea disabled={isGenerating} name='text' value={formData.message} onChange={(e) => {handleChange(e)}}required 
-                                    className="peer bg-zinc-800 p-2 border border-zinc-700 focus:border-indigo-500 rounded-md outline-none w-full h-20 text-white transition-all duration-200"
-                                />
-                                <label className="left-2 absolute bg-[#212121] px-1 rounded-sm text-gray-400 peer-focus:text-[#2196f3] peer-valid:text-[#2196f3] text-xs text-clip scale-100 peer-focus:scale-75 peer-valid:scale-75 transition-all translate-y-3 peer-focus:-translate-y-2 peer-valid:-translate-y-2 duration-200 pointer-events-none transform">
-                                    <span>message</span>
-                                </label>
-                                {show && 
-                                    <div 
-                                        onClick={()=>prompttext({lastChar:'\n',value:formData.message||''})} 
-                                        className="z-2 absolute flex justify-start items-center gap-3 bg-[#1a1e23] px-2 border-[#3e4a57] border-1 rounded-md h-10 text-[#b0bec5]"
-                                    ><div className="size-6"><Gemini/></div>Generate Text or Complete Sentence</div>
-                                }
-                            </div>
-                            <div className="relative w-full md:w-2/3 max-w-120">
-                                <input 
-                                    onKeyDown={handleInputKeyDown}
-                                    disabled={isGenerating} 
-                                    onChange={(e) => {handleInputChange(e)}} 
-                                    value={inputValue}
-                                    className="peer bg-zinc-800 p-2 border border-zinc-800 focus:border-indigo-500 rounded-md outline-none w-[97%] h-10 text-white transition-all duration-200" 
-                                    type="text"
-                                />
+                                <div className="relative flex items-start w-full gap-1 max-w-120">
+                                    <div className="size-4 flex justify-center items-start text-muted-foreground h-12"><Discribtion/></div>
+                                    <textarea 
+                                        disabled={isGenerating} 
+                                        name='text' 
+                                        value={formData.message} 
+                                        onChange={(e) => {handleChange(e)}}
+                                        required 
+                                        placeholder="write discribtion"
+                                        className="w-full bg-transparent text-sm text-foreground border-b border-border placeholder:text-muted-foreground resize-none h-24 focus:outline-none"
+                                    />
+                                    {show && 
+                                        <div 
+                                            onClick={()=>prompttext({lastChar:'\n',value:formData.message||''})} 
+                                            className="z-2 absolute flex justify-start items-center gap-3 bg-[#1a1e23] px-2 border-[#3e4a57] border-1 rounded-md h-10 text-[#b0bec5]"
+                                        ><div className="size-6"><Gemini/></div>Generate Text or Complete Sentence</div>
+                                    }
+                                </div>
+                                <div className="relative w-full items-start flex gap-1 max-w-120">
+                                    <div className="size-4 flex justify-center items-center text-muted-foreground h-12"><Tags/></div>
+                                    <input 
+                                        onKeyDown={handleInputKeyDown}
+                                        disabled={isGenerating} 
+                                        onChange={(e) => {handleInputChange(e)}} 
+                                        value={inputValue}
+                                        placeholder="Tags"
+                                        className="w-full bg-transparent text-sm text-foreground placeholder:text-muted-foreground h-12 focus:outline-none" 
+                                        type="text"
+                                    />
+                                </div>
                                 {formData.tags&& 
                                     <>
                                         <div className="flex flex-wrap gap-2 mt-2 w-full h-20 overflow-auto">
@@ -358,25 +371,19 @@ useEffect(() => {
                                     onClick={()=>prompttag({lastChar:'\n',title:formData.title||'',message:formData.message||''})} 
                                     className="top-12 z-2 absolute flex justify-start items-center gap-3 bg-[#1a1e23] px-2 border-[#3e4a57] border-1 rounded-md h-10 text-[#b0bec5]"
                                 ><div className="size-6"><Gemini/></div>Generate Tags</div>}
-
-                                <label className="top-0 left-4 absolute bg-zinc-800 px-1 border border-zinc-800 peer-focus:border-indigo-500 rounded-sm text-gray-400 text-md peer-focus:text-[#fff] peer-valid:text-[#fff] scale-100 peer-focus:scale-75 peer-valid:scale-75 transition-all translate-y-2 peer-focus:-translate-y-2 peer-valid:-translate-y-2 duration-200 pointer-events-none transform">
-                                <span>Tags</span>
-                                </label>
-                            </div>
-                        </>
-                    }
-                    <div className="relative w-full md:w-2/3 max-w-80">
-                        {PostUploadPage.page3 === pages &&
-                            <button onClick={handleSubmit} disabled={isGenerating || formData?.tags.length > 15} type="submit" className="bg-gradient-to-bl hover:bg-gradient-to-tr from-[#1ed1db] to-[#2daaae] p-1 rounded-md w-full font-semibold text-md transition-all duration-300 ease-in-out">{loading? <PulseLoader color="#fff"/>:'Post'}</button>
+                            </>
                         }
+                        <div className="relative w-full max-w-120">
+                            {PostUploadPage.page2 === pages &&
+                                <button onClick={handleSubmit} disabled={isGenerating || formData?.tags.length > 15} type="submit" className="bg-gradient-to-bl hover:bg-gradient-to-tr from-[#1ed1db] to-[#2daaae] p-1 rounded-md w-full font-semibold text-md transition-all duration-300 ease-in-out">{loading? <PulseLoader color="#fff"/>:'Post'}</button>
+                            }
+                        </div>
                     </div>
-                </div>
-            </form>
-            <PageButtons pages={pages} SetPages={SetPages}/>
-            <button onClick={clear} className="relative bg-red-500 before:bg-red-400 mt-5 p-1 rounded-md w-full md:w-2/3 max-w-80 font-semibold text-md" value="Upload"><h1 >Clear</h1></button>
+                </form>
+            </div>
+            {showToast && <Toasts type={tostType==='warningMsg'?'warningMsg':'infoMsg'} msg={responseMsg}/>}
         </div>
-        {showToast && <Toasts type={tostType==='warningMsg'?'warningMsg':'infoMsg'} msg={responseMsg}/>}
-    </div>
+    </>
   )
 }
 

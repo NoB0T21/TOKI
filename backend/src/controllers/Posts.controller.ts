@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import uuid from "uuid4";
 import supabase from "../Db/supabase";
-import { createfile,decfollowerCount,decfollowingCount,declikeCount, getcreatorFollower, getcreatorFollowing, getLikePost,incfollowerCount,incfollowingCount,inclikeCount, LikePost } from "../services/post.service";
+import { createfile,decfollowerCount,decfollowingCount,declikeCount, getcreatorFollower, getcreatorFollowing, getExplorePostExcludeingUser, getLikePost,getProfilePostByIds,getProfilePosts,incfollowerCount,incfollowingCount,inclikeCount, LikePost } from "../services/post.service";
 
 export const uploadFile = async (request: Request, response: Response) => {
     const { file } = request;
@@ -95,6 +95,96 @@ export const uploadFile = async (request: Request, response: Response) => {
             success: false,
         });
         return
+    }
+};
+
+export const getExplorePost = async (request: Request, response: Response) => {
+    const userId = request.user._id;
+    let page = request.query?.page as unknown as number
+    try {
+        if (!userId) {
+            return response.status(400).json({
+                message: "Missing fields",
+                success: false,
+            });
+        }
+
+        let data = await getExplorePostExcludeingUser(userId,page);
+
+        if (!data) {
+            return response.status(404).json({ message: "User not found" });
+        }
+        return response.status(200).json({
+            message: "get post successfully",
+            data,
+            success: true,
+        });
+    } catch (error) {
+        console.error("Error in followuser:", error);
+        return response.status(500).json({
+            message: "Internal server error",
+            success: false,
+        });
+    }
+};
+
+export const getProfilePostowner = async (request: Request, response: Response) => {
+    const userId = request.user._id;
+    let page = request.query?.page as unknown as number
+    try {
+        if (!userId) {
+            return response.status(400).json({
+                message: "Missing fields",
+                success: false,
+            });
+        }
+
+        let data = await getProfilePosts(userId,page);
+
+        if (!data) {
+            return response.status(404).json({ message: "User not found" });
+        }
+        return response.status(200).json({
+            message: "get post successfully",
+            data,
+            success: true,
+        });
+    } catch (error) {
+        console.error("Error in followuser:", error);
+        return response.status(500).json({
+            message: "Internal server error",
+            success: false,
+        });
+    }
+};
+
+export const getProfilePost = async (request: Request, response: Response) => {
+    let page = request.query?.page as unknown as number
+    const {ids} = request.body;
+    try {
+        if (!ids) {
+            return response.status(400).json({
+                message: "Missing fields",
+                success: false,
+            });
+        }
+
+        const data = await getProfilePostByIds(ids,page);
+
+        if (!data) {
+            return response.status(404).json({ message: "User not found" });
+        }
+        return response.status(200).json({
+            message: "get post successfully",
+            data,
+            success: true,
+        });
+    } catch (error) {
+        console.error("Error in followuser:", error);
+        return response.status(500).json({
+            message: "Internal server error",
+            success: false,
+        });
     }
 };
 

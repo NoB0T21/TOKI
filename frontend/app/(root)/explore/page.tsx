@@ -1,16 +1,11 @@
 import Explore from "@/components/card/Explore"
 import { ExploreHeader } from "@/components/navigation/Header"
-import { ApolloWrapper } from "@/context/ApolloClientProvider"
 
 const page = async () => {
   return (
     <>
       <ExploreHeader/>
-      <div className='sm:bg-[#1a1e23] p-5 sm:rounded-2xl w-full h-full overflow-y-auto'>
-        <ApolloWrapper>
-            <Explore/>
-        </ApolloWrapper>
-      </div>
+      <Explore/>
     </>
   )
 }

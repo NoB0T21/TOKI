@@ -8,7 +8,7 @@
     "dev": "nodemon",
     "start": "node ./dist/server.js",
     "client": " npm run dev --prefix ../frontend",
-    "start2": "concurrently \" npm run start \" \" npm run client \""
+    "start2": "concurrently \" npm run dev \" \" npm run client \""
   },
   "author": "Aryan Gawade (NoB0T)",
   "license": "ISC",

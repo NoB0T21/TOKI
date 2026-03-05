@@ -1,16 +1,12 @@
 'use client'
 
-import { getexplorepostpageintion } from "@/queries/Queries";
-import { useLazyQuery } from "@apollo/client";
-import { useEffect, useId, useRef, useState } from "react";
-import Cookies from "js-cookie";
-import Image from "next/image";
-import ExploreGrid from "../ExploreGrid";
-import { Posts } from "@/Types/types";
-import { getUserPosts } from "@/utils/clientApollo";
+import { useEffect, useRef, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/store/store";
-import { addPosts, increaseSkip, setScrollPosition, resetSkip } from "@/state/exploreSlice";
+import { addPosts, increaseSkip, setScrollPosition } from "@/state/exploreSlice";
+import { motion } from "motion/react";
+import PostViewer from "../PostViewer";
+import { getExplorePosts } from "@/utils/clientAction";
 
 const p = {
     id: '',
@@ -43,8 +39,6 @@ const p = {
   }
 
 const Explore = () => {
-  const userId = Cookies.get('user') || ''
-  const [getuserPost] = useLazyQuery(getexplorepostpageintion)
   const dispatch = useDispatch();
   const scrollPosition = useSelector(
     (state: RootState) => state.explore.scrollPosition
@@ -53,26 +47,21 @@ const Explore = () => {
   const skip = useSelector((state: RootState) => state.explore.skip);
   const hasMore = useSelector((state: RootState) => state.explore.hasMore);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [loading, setLoading] = useState(false);
-  const [post, setPost] = useState<Posts>(p);
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   
   const fetchMore = async () => {
-    if (!hasMore || loading) return;
-    setLoading(true);
-    const posts = await getUserPosts({ userId, skip, getuserPost });
+    if (!hasMore) return;
+    const posts = await getExplorePosts(skip);
     const newPosts = posts || [];
     if (newPosts) {
       dispatch(addPosts(newPosts));
     }
-    setLoading(false);
   };
   
   const handleScroll = (e: React.UIEvent<HTMLElement>) => {
     const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
-
     dispatch(setScrollPosition(scrollTop));
-
-    if (scrollTop + clientHeight >= scrollHeight - 100 && hasMore) {
+    if (Math.round(scrollTop + clientHeight) >= scrollHeight && hasMore) {
       dispatch(increaseSkip());
     }
   };
@@ -81,54 +70,44 @@ const Explore = () => {
     if (scrollRef.current && posts.length > 0) {
       scrollRef.current.scrollTo({
         top: scrollPosition,
-        behavior: "auto", // IMPORTANT: not smooth
+        behavior: "auto",
       });
     }
   }, [posts]);
-         
-  useEffect(() => {
-    setLoading(false)
-    if (posts.length === 0) {
-      dispatch(resetSkip());
-      fetchMore();
-    }
-  }, []);
   
   useEffect(() => {
-    if (skip !== 0) {
-      fetchMore();
-    }
+    fetchMore();
   }, [skip])
 
   return (
-    <div onScroll={handleScroll} ref={scrollRef} className={`gap-1 ${(posts.length > 0 && !post.id) ? 'grid' : 'flex'} grid-cols-4 grid-flow-dense auto-rows-[80px] md:auto-rows-[150px] w-full h-full overflow-y-scroll`}>
-      {(posts.length > 0 && !post.id)? posts.map((post,index)=>(
-        <div 
-          key={post.id}
-          onClick={()=>{
-            setPost(post);
-          }}
-          className={`${index % 7 === 0 ? 'col-span-2 row-span-2 ' : ''} w-full h-full`}>
-            <Image
+    <>
+      {/* Grid */}
+      <div onScroll={handleScroll} ref={scrollRef} className="grid grid-cols-3 gap-0.5 auto-rows-[140px] h-screen overflow-y-scroll">
+        {posts.map((post, i) => (
+          <motion.div
+            key={i}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: i * 0.03 }}
+            className={`cursor-pointer overflow-hidden ${i % 5 === 0 ? "col-span-2 row-span-2" : ""} w-full h-full`}
+            onClick={() => setSelectedIndex(i)}
+          >
+            <img
               src={post.pictureURL}
-              alt="Post"
-              width={1920}
-              height={1080}
-              className={` rounded-md w-full h-full object-cover`}
+              alt=""
+              className="w-full h-full aspect-square object-cover hover:opacity-80 transition-opacity"
             />
-        </div>
-      )) : <div className={`w-full h-full ${post.id ? 'hidden' : 'flex'} justify-center items-center`}>There is problem with server</div>}
-      {post.id && 
-        <div className="flex flex-col justify-start gap-2 w-full h-full">
-          <div onClick={()=>{
-            setPost(p);
-          }} className="flex justify-center items-center bg-red-500 p-2 rounded-md size-6 md:size-8 text-2xl">
-            <p>x</p>
-          </div>
-          <ExploreGrid post={post} Likes={post.like.like} LikeCount={post.like.likeCount} Following={post.follower.count}/>
-        </div>
-      }
-    </div>
+          </motion.div>
+        ))}
+      </div>
+      {selectedIndex !== null && (
+        <PostViewer
+          posts={posts}
+          initialIndex={selectedIndex}
+          onClose={() => setSelectedIndex(null)}
+        />
+      )}
+    </>
   )
 }
 

@@ -3,7 +3,7 @@ import uuid4 from "uuid4";
 import supabase from "../Db/supabase";
 import story from "../models/user.story.model";
 import storyviews from "../models/story.views";
-import { incstoryviewCount } from "../services/story.service";
+import { getStory, incstoryviewCount } from "../services/story.service";
 import storyview from "../models/story.views";
 
 export const AddStory = async (req:Request,res:Response) => {
@@ -45,8 +45,10 @@ export const AddStory = async (req:Request,res:Response) => {
                 originalname: file?.originalname || "",
                 imageUrl: publicUrlData.data.publicUrl || "",
                 SongId,
-                start,
-                end
+                createdAt:  new Date(Date.now()),
+                expiresAt: new Date(Date.now() + 86400000), // 24 hours
+                start:start||0,
+                end:end||30
             });
             const newsto = await storyview.create({
                 storyID:newFile.id,
@@ -154,6 +156,37 @@ export const AddviewStory = async (req:Request,res:Response) => {
         await file.save();
         return res.status(200).json({
             message: "you Liked this post",
+            success:true
+        })
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal server error",
+            success: false,
+        });
+        return
+    }
+}
+
+export const getStorys = async (req:Request,res:Response) => {
+    const {ids} = req.body
+    const userid = req.user._id
+    if (!userid) {
+        res.status(400).json({
+            message: "Require all fields",
+            success: false,
+        });
+        return
+    }
+
+    try {
+        const file = await getStory(ids)
+        
+        if(!file){
+            return res.status(204).json({message:'Post Not Found'})
+        }
+        return res.status(200).json({
+            message: "you Liked this post",
+            data:file,
             success:true
         })
     } catch (error) {
