@@ -6,8 +6,8 @@ const router = express.Router();
 const upload = multer({ storage: multer.memoryStorage() })
 
 router.post('/create', middleware,upload.single('file'), uploadFile)
-router.get('/get',middleware,getExplorePost)
 router.put('/get',middleware,upload.none(),getProfilePost)
+router.get('/get',middleware,getExplorePost)
 router.get('/get/profile',middleware,getProfilePostowner)
 router.get('/like/:id',middleware,likeFile)
 router.get('/follow/:id',middleware,followuser)
