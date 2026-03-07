@@ -138,8 +138,6 @@ const AuthForm = ({type}: {type: FormType}) => {
         localStorage.setItem('token',token)
           Cookies.set("token", token, {
             expires: 1, // days
-            sameSite: "strict",
-            secure: true
         });
         router.push('/')
         setLoading(false)

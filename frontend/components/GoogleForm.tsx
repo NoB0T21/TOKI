@@ -27,8 +27,6 @@ const GoogleForm = () => {
         if(responses.status === 200){
           Cookies.set("token", res.access_token, {
             expires: 1, // days
-            sameSite: "strict",
-            secure: process.env.PRODUCTION === 'false' ? false : true
           });
         }
         const form = new FormData();
@@ -55,8 +53,8 @@ const GoogleForm = () => {
           localStorage.setItem('user', JSON.stringify(user));
           Cookies.set("user", raw._id, {
             expires: 1, // days
-            sameSite: "strict",
-            secure: process.env.PRODUCTION === 'false' ? false : true
+            sameSite: "none",
+            secure: false
           });
           router.push('/')
           return

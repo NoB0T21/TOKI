@@ -51,17 +51,9 @@ const Home = ({ids}:{ids:string[]}) => {
     setPlay(play)
   }
 
-  useEffect(() => {
-    if (posts.length === 0) {
-      fetchMore();
-    }
-  }, []);
-
   
   useEffect(() => {
-    if (skip !== 0) {
-      fetchMore();
-    }
+    fetchMore()
   }, [skip])
   
   return (

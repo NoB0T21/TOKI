@@ -1,5 +1,4 @@
 'use client'
-import axios from "axios";
 import { api } from "./api";
 import Cookies from "js-cookie"
 
@@ -131,22 +130,27 @@ export const getProfileFollowingdata = async ( form:string[], page:number = 1, l
 
 export const getuserstorys = async ( form:string[] ) => {
     const token = Cookies.get('token');
-    const data = await axios.post(`https://toki-backend-qw63.onrender.com/user/get`,
-        {userIds: form},
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        withCredentials: true,
-      }
-    );
-    console.log(data.data.data)
-    return data.data.data
+    try {
+      console.log(token)
+      const data = await api.post(`/user/get`,
+          {userIds: form},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+        }
+      );
+      console.log(data.data.data)
+      return data.data.data
+    } catch (error) {
+      console.log(error)
+    }
 }
 
 export const getExplorePosts = async ( page:number = 1) => {
     const token = Cookies.get('token');
-    const data = await axios.get(`https://toki-backend-qw63.onrender.com/post/get?page=${page}`,
+    const data = await api.get(`/post/get?page=${page}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
