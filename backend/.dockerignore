@@ -16,3 +16,6 @@ docker-compose.yml
 # Build
 dist
 build
+
+vercel.json
+.vercel
