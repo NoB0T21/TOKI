@@ -120,6 +120,7 @@ export const getProfileFollowingdata = async ( form:string[], page:number = 1, l
         {userIds: form},
       {
         headers: {
+          "Content-Type": "multipart/form-data" ,
           Authorization: `Bearer ${token}`,
         },
         withCredentials: true,
@@ -136,6 +137,7 @@ export const getuserstorys = async ( form:string[] ) => {
           {userIds: form},
         {
           headers: {
+           "Content-Type": "multipart/form-data",
             Authorization: `Bearer ${token}`,
           },
           withCredentials: true,
@@ -150,7 +152,7 @@ export const getuserstorys = async ( form:string[] ) => {
 
 export const getExplorePosts = async ( page:number = 1) => {
     const token = Cookies.get('token');
-    const data = await api.get(`/post/get?page=${page}`,
+    const data = await api.get(`/post/get/explore?page=${page}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -180,6 +182,7 @@ export const getProfilePosts = async ( form:string[], page:number = 1 ) => {
         {ids: form},
       {
         headers: {
+          "Content-Type": "multipart/form-data" ,
           Authorization: `Bearer ${token}`,
         },
         withCredentials: true,
