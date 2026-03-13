@@ -15,11 +15,15 @@ declare global {
 
 const middleware = async (req: Request, res: Response, next: NextFunction) => {
   const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+  if (!authHeader) {
     res.status(401).json({ message: 'Access Token required' });
     return;
   }
-  const accessToken = authHeader.split(' ')[1];
+  const authHeader1 = req.headers.cookie
+  let accessToken = authHeader.split(' ')[1];
+  if(authHeader1 && !accessToken){
+    accessToken = authHeader1.split('=')[1].split(';')[0]
+  }
   try {
     const user = jwt.verify(accessToken, process.env.SECRET_KEY || 'default');
     req.user = user;
