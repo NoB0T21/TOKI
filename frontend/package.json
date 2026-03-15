@@ -20,7 +20,7 @@
     "html-to-image": "^1.11.13",
     "js-cookie": "^3.0.5",
     "motion": "^12.23.0",
-    "next": "^15.1.7",
+    "next": "^16.1.6",
     "re-resizable": "^6.11.2",
     "react": "^18.3.1",
     "react-color": "^2.19.3",
@@ -38,7 +38,7 @@
     "@types/react-color": "^3.0.13",
     "@types/react-dom": "^18.3.7",
     "eslint": "^9",
-    "eslint-config-next": "^15.1.7",
+    "eslint-config-next": "^16.1.6",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
