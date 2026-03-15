@@ -1,3 +1,4 @@
+'use client'
 import { AnimatePresence, motion } from "motion/react"
 import React, { useEffect, useState } from 'react'
 import {Info, Warning} from "../Icons"

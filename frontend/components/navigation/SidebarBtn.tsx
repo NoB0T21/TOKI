@@ -9,7 +9,10 @@ import { useEffect, useState } from "react"
 const SidebarBtn = ({pathname,name}:{pathname: string, name: string}) => {
    const path = usePathname()
    const [user,SetUser] = useState<any>()
-   useEffect(()=>{SetUser(JSON.parse(localStorage.getItem('user') || ''))},[])
+   useEffect(() => {
+  const raw = localStorage.getItem('user')
+    if (raw) SetUser(JSON.parse(raw))
+  }, [])
 
   return (
     <>

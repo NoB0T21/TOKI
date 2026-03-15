@@ -1,8 +1,6 @@
 'use client'
 
 import { Like, LikeFill, Music, Save, Send, Comment, Mute, Playaudio} from "./Icons";
-import Image from 'next/image'
-import Link from 'next/link'
 import Cookies from "js-cookie";
 import { useEffect, useRef, useState } from 'react';
 import {AnimatePresence, motion} from 'motion/react'

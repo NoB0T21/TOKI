@@ -1,4 +1,3 @@
-import { string } from "zod/v4";
 
 export interface Auth {
   name?: string;

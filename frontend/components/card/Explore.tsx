@@ -85,7 +85,7 @@ const Explore = () => {
       <div onScroll={handleScroll} ref={scrollRef} className="grid grid-cols-3 gap-0.5 auto-rows-[140px] h-screen overflow-y-scroll">
         {posts.map((post, i) => (
           <motion.div
-            key={i}
+            key={post.id}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: i * 0.03 }}

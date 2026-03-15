@@ -1,13 +1,25 @@
-"use client"
+'use client'
 
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
-
-const queryClient = new QueryClient()
+import { Provider } from "react-redux";
+import { store } from "@/store/store";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
 
 export default function Providers({ children }: { children: React.ReactNode }) {
+  const [mounted, setMounted] = useState(false);
+  const [queryClient] = useState(() => new QueryClient());
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return <>{children}</>;
+
   return (
-    <QueryClientProvider client={queryClient}>
-      {children}
-    </QueryClientProvider>
-  )
+    <Provider store={store}>
+      <QueryClientProvider client={queryClient}>
+        {children}
+      </QueryClientProvider>
+    </Provider>
+  );
 }

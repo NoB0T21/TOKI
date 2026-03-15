@@ -1,6 +1,6 @@
-"use client"
+'use client'
+export const dynamic = 'force-dynamic'
 
-import Cookies from 'js-cookie'
 import { useEffect, useRef, useState} from 'react'
 import { toPng } from 'html-to-image'
 import { ChromePicker} from 'react-color'
@@ -26,7 +26,7 @@ interface Track {
 // ---------------------- Main Page ----------------------
 export default function Page() {
   const route = useRouter()
-  const userId = Cookies.get('user')
+  const [userId, setUserId] = useState<string>('')
   const storyRef = useRef<HTMLDivElement>(null)
   const imageInputRef = useRef<HTMLInputElement>(null)
 
@@ -49,6 +49,11 @@ export default function Page() {
       prev.map((el) => (el.id === selectedId ? { ...el, ...props } : el))
     )
   }
+
+  useEffect(() => {
+    const raw = localStorage.getItem('user')
+    if (raw) setUserId(JSON.parse(raw)._id)
+  }, [])
 
   const handleAddText = () => {
     const id = crypto.randomUUID()

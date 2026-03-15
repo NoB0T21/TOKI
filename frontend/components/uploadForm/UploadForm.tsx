@@ -5,11 +5,9 @@ import { useEffect, useState } from "react";
 import { PulseLoader } from "react-spinners";
 import { z } from "zod";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import Toasts from "../toasts/Toasts";
 import { postFormapi } from "@/utils/clientAction";
 import { Discribtion, Gemini, Tags, Title } from "../Icons";
-import { tryLoadManifestWithRetries } from "next/dist/server/load-components";
 import MusicSelect from "../story/MusicSelect";
 import {PostUploadPage, Track} from '../../Types/types'
 import PageButtons from "./PageButtons";
@@ -88,7 +86,9 @@ const removeTag = (indexToRemove: number) => {
     };
     
 useEffect(() => {
-    const use = JSON.parse(localStorage.getItem('user') || '')
+    const raw = localStorage.getItem('user')
+    const use = raw ? JSON.parse(raw) : null
+    if (!use) return
     SetUser(use)
     setFormData({
         creator:use?.name, 

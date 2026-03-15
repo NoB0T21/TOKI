@@ -3,7 +3,6 @@
 import { usePathname } from "next/navigation"
 import { Grid, GridFill, Reel, ReelFill } from "../Icons"
 import Link from "next/link"
-import { useState } from "react"
 
 const ProfileNav = () => {
     const path = usePathname().split('/')[1]

@@ -1,8 +1,6 @@
 import MobileNav from "@/components/navigation/MobileNav"
-import Sidebar from "@/components/navigation/Sidebar"
-import { ApolloWrapper } from "@/context/ApolloClientProvider"
 
-const layout = ({children}:{children: React.ReactNode}) => {
+const Layout = ({children}:{children: React.ReactNode}) => {
   return (
     <main className='min-h-screen bg-background max-w-lg mx-auto relative'>
         {children}
@@ -16,4 +14,4 @@ const layout = ({children}:{children: React.ReactNode}) => {
   )
 }
 
-export default layout
+export default Layout

@@ -1,3 +1,4 @@
+'use client'
 import { actionDropdown } from "@/utils/utils"
 import Items from "./Items"
 

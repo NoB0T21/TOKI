@@ -5,16 +5,18 @@ import { Logout } from '../Icons'
 import Cookie from 'js-cookie'
 import { useDispatch } from 'react-redux'
 import { resetFeed } from '@/state/feedSlice'
+import { logoutUser } from '@/utils/clientAction'
 
 const LogoutBtn = () => {
     const router= useRouter()
     const dispatch = useDispatch();
-    const logout = () => {
+    const logout = async () => {
       localStorage.removeItem('token')
       localStorage.removeItem('user')
       Cookie.remove('token')
       Cookie.remove('user')
       dispatch(resetFeed());
+      await logoutUser()
       router.push('/sign-up')
     }
   return (

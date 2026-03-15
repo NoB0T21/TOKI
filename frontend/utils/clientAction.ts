@@ -215,3 +215,11 @@ export const getuserfollowing = async () => {
     })
     return Ids.data.creatorIds
 }
+
+export const logoutUser = async () => {
+    const data = await api.get(
+        '/user/logout'
+    )
+
+    return data.data
+}

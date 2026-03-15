@@ -111,7 +111,7 @@ const Followers = ({followinglist,userid}:Following) => {
             className="space-y-3 w-full min-h-0 overflow-y-auto"
           >
             {users.map((user: User)=>(
-                <div  key={user.id} className="bg-card px-7 rounded-md w-full h-15 overflow-hidden">
+                <div  key={user._id} className="bg-card px-7 rounded-md w-full h-15 overflow-hidden">
                     <div className="flex justify-between items-center w-full h-full">
                         <Link href={`/user/${user._id}`} className="flex items-center gap-4 h-full">
                           <Image

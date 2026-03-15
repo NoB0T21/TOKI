@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
-import Providers from "@/utils/provider";
+import Providers from "@/context/tankstack";  // ← add this
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -11,20 +11,16 @@ const poppins = Poppins({
 
 export const metadata: Metadata = {
   title: "Toki — Capture Time. Share Life.",
-  description: "Toki is a minimalist social platform where memories become timeless. Snap, share, and relive life’s best moments — all in your own flow, in your own time.",
+  description: "...",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body
-        className={`${poppins.variable} font-poppins antialiased`}
-      >
-        <Providers>{children}</Providers>
+      <body className={`${poppins.variable} font-poppins antialiased`}>
+        <Providers>        {/* ← wraps everything once */}
+          {children}
+        </Providers>
       </body>
     </html>
   );

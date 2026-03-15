@@ -1,3 +1,4 @@
+'use client'
 import { Post } from "@/Types/types"
 import Image from "next/image"
 import Link from "next/link"

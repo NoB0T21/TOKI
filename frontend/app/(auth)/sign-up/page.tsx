@@ -1,6 +1,7 @@
+export const dynamic = 'force-dynamic'
 import AuthForm from "@/components/AuthForm"
 
-const Signup = () => {
+const page = () => {
   return (
     <>
       <AuthForm type="sign-up"/>
@@ -8,4 +9,4 @@ const Signup = () => {
   )
 }
 
-export default Signup
+export default page

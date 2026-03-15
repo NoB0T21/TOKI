@@ -1,5 +1,7 @@
+export const dynamic = 'force-dynamic'
 import Explore from "@/components/card/Explore"
 import { ExploreHeader } from "@/components/navigation/Header"
+
 
 const page = async () => {
   return (
@@ -11,3 +13,4 @@ const page = async () => {
 }
 
 export default page
+

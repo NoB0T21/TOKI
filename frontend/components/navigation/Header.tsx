@@ -1,3 +1,4 @@
+'use client'
 import Image from 'next/image'
 import LogoutBtn from './LogoutBtn'
 import Link from 'next/link'

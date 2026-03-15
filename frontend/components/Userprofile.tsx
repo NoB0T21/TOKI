@@ -19,9 +19,9 @@ const Userprofile = ({userid}:{userid?: string}) => {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [hasMore, setHasMore] = useState(true);
 
-  const user: User2 = data?.res.user
+  const user: User2 = data?.res?.user
   console.log(data?.res)
-  const p: Posts[] = data?.res.posts
+  const p: Posts[] = data?.res?.posts
 
   const fetchMore = async () => {
     if (!hasMore || !userId) return;
@@ -83,17 +83,17 @@ const Userprofile = ({userid}:{userid?: string}) => {
       </div>
 
       {/* Profile */}
-      <ProfileData 
-        id={user._id||''}
-        picture={user.picture} 
-        posts={user?.postcount?.postcount ?? 0} 
-        follower={user.follower.followerCount} 
-        following={user.following.folloingCount}
-        followinglist={user.following.count[0]}
-        followerlist={user.follower.count[0]}
-        userid={userid}
-        name={user.name}
-      />
+          <ProfileData 
+            id={user._id||''}
+            picture={user.picture} 
+            posts={user?.postcount?.postcount ?? 0} 
+            follower={user.follower.followerCount} 
+            following={user.following.folloingCount}
+            followinglist={user.following.count[0]}
+            followerlist={user.follower.count[0]}
+            userid={userid}
+            name={user.name}
+          />
       <div className='top-0 z-51 sticky glass border-b border-border px-4'>
         <ProfileNav/>
       </div>
@@ -102,7 +102,7 @@ const Userprofile = ({userid}:{userid?: string}) => {
       <div className="grid grid-cols-3 gap-0.5">
         {posts.map((img, i) => (
           <motion.div
-            key={i}
+            key={img.id}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: i * 0.05 }}

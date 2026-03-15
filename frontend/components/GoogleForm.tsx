@@ -1,4 +1,4 @@
-
+'use client'
 import { useGoogleLogin } from "@react-oauth/google"
 import { useState } from "react"
 import { Google } from "./Icons";

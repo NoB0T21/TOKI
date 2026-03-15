@@ -5,7 +5,6 @@ import { usePathname } from 'next/navigation'
 import Image from 'next/image'
 import { Post } from '@/Types/types'
 
-
 const Posts = ({posts,owner}:{posts : Post[],owner:string}) => {
     const path = usePathname()
     const postId = path.split('/')[4]

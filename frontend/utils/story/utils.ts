@@ -1,3 +1,4 @@
+'use client'
 import { StoryElement } from "@/Types/types"
 
 // Update functions for elements

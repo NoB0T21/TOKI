@@ -1,4 +1,4 @@
-import React from 'react'
+'use client'
 import SidebarBtn from './SidebarBtn'
 
 const MobileNav = () => {

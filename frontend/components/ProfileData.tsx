@@ -140,7 +140,7 @@ const ProfileData = ({picture,posts,follower,following,followerlist,followinglis
                 <div className="flex flex-col items-center gap-7 bg-secondary p-3 border-border border-1 rounded-2xl w-full h-full">
                   <div onScroll={handleFollowingScroll} className="flex flex-col gap-3 w-full h-full">
                       {usersfollowing.map((user: any)=>(
-                          <Following user={user}/>
+                          <Following user={user} key={user._id}/>
                       ))}
                   </div>
                 </div>

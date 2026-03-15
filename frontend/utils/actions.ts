@@ -1,7 +1,6 @@
 'use client'
 import { useQuery } from "@tanstack/react-query"
-import Cookies from "js-cookie"
-import { getProfiledata, getProfileFollowingdata } from "./clientAction"
+import { getProfiledata } from "./clientAction"
 
 const user = JSON.parse(localStorage.getItem('user') || '{}')
 

@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic'
 import UploadForm from '@/components/uploadForm/UploadForm'
 
 const page = () => {
@@ -9,3 +10,4 @@ const page = () => {
 }
 
 export default page
+
