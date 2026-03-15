@@ -324,7 +324,6 @@ export const getUserProfile = async (req: Request, res:Response) => {
 
 export const getUserProfileFollowing = async (req: Request, res:Response) => {
     const {userIds} = req.body
-    console.log(userIds)
     if(!userIds){
         res.status(401).json({ message: 'Access Token required' });
         return;

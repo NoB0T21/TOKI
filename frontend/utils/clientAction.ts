@@ -132,7 +132,6 @@ export const getProfileFollowingdata = async ( form:string[], page:number = 1, l
 export const getuserstorys = async ( form:string[] ) => {
     const token = Cookies.get('token');
     try {
-      console.log(token)
       const data = await api.post(`/user/get`,
           {userIds: form},
         {

@@ -20,6 +20,7 @@ const Userprofile = ({userid}:{userid?: string}) => {
   const [hasMore, setHasMore] = useState(true);
 
   const user: User2 = data?.res.user
+  console.log(data?.res)
   const p: Posts[] = data?.res.posts
 
   const fetchMore = async () => {

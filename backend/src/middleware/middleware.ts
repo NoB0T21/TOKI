@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken'
-import {OAuth2Client} from 'google-auth-library'
+import {auth, OAuth2Client} from 'google-auth-library'
 import { NextFunction, Request, Response } from 'express'
 import { findUser } from '../services/user.service';
 
@@ -21,11 +21,11 @@ const middleware = async (req: Request, res: Response, next: NextFunction) => {
   }
   const authHeader1 = req.headers.cookie
   let accessToken = authHeader.split(' ')[1];
-  if(authHeader1 && !accessToken){
+  if(authHeader1 && accessToken === 'undefined'){
     accessToken = authHeader1.split('=')[1].split(';')[0]
   }
   try {
-    const user = jwt.verify(accessToken, process.env.SECRET_KEY || 'default');
+    const user = jwt.verify(accessToken, process.env?.SECRET_KEY || '');
     req.user = user;
     next();
   } catch (err) {
