@@ -293,7 +293,7 @@ export const getfollowings = async (req: Request, res:Response) => {
 }
 
 export const getUserProfile = async (req: Request, res:Response) => {
-    let userId = req.params.id;
+    let userId = req.params.id as string;
     if(!userId)userId = req.user._id;
     if(!userId){
         res.status(401).json({ message: 'Access Token required' });
